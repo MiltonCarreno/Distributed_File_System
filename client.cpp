@@ -8,6 +8,27 @@
 #define PORT 8080
 const char* LOCAL_HOST = "127.0.0.1";
 
+void func(int sockfd)
+{
+    char buff[1024];
+    int n;
+    for (;;) {
+        bzero(buff, sizeof(buff));
+        printf("Enter the string : ");
+        n = 0;
+        while ((buff[n++] = getchar()) != '\n');
+        
+        write(sockfd, buff, sizeof(buff));
+        bzero(buff, sizeof(buff));
+        read(sockfd, buff, sizeof(buff));
+        printf("From Server : %s", buff);
+        if ((strncmp(buff, "exit", 4)) == 0) {
+            printf("Client Exit...\n");
+            break;
+        }
+    }
+}
+
 int main(int argc, char const* argv[]) {
   int sock = 0, valread, client_fd;
   struct sockaddr_in serv_addr;
@@ -38,6 +59,8 @@ int main(int argc, char const* argv[]) {
   printf("Hello message sent\n");
   valread = read(sock, buffer, 1024);
   printf("%s\n", buffer);
+
+  func(sock);
 
   // closing the connected socket
   close(client_fd);
