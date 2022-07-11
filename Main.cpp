@@ -4,7 +4,9 @@
 #include <string.h>
 #include <unistd.h>
 
+// Number of connection requests waiting to be accepted
 const int MAX_CONN_REQS = 2;
+// Number of total connections to be accepted
 const int MAX_CONN = 2;
 
 void chat(int connection){
@@ -12,7 +14,7 @@ void chat(int connection){
     bool continueChat = true;
     int n;
 
-    // infinite loop for chat
+    // Continue chat until Controller quits
     while (continueChat) {
         bzero(buff, sizeof(buff));
         read(connection, buff, sizeof(buff));
@@ -31,18 +33,6 @@ void chat(int connection){
     // Close connection socket
     close(connection);
 }
-
-// void chat(int connection) {
-//     char buffer[1024] = { 0 };
-//     char* hello = "Hello from Controller";
-//     int valread = read(connection, buffer, 1024);
-//     printf("%s\n", buffer);
-//     send(connection, hello, strlen(hello), 0);
-//     printf("Hello message sent\n");
-    
-//     // Close connection socket
-//     close(connection);
-// }
 
 int main(int argc, char* argv[]) {
     // Create Controller

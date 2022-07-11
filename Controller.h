@@ -4,7 +4,7 @@
 
 class Controller {
     private:
-        int new_socket, address_len, opt;
+        int newSocket, addressLen, opt;
         struct sockaddr_in address;
 
     public:
