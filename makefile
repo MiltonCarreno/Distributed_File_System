@@ -10,7 +10,7 @@ dfs: Main.o Controller.o
 client: client.cpp
 	$(CXX) -o client client.cpp
 Main.o: Main.cpp
-	$(CXX) -c Main.cpp
+	$(CXX) -std=c++17 -c Main.cpp
 Controller.o: Controller.cpp
 	$(CXX) -c Controller.cpp
 clean:

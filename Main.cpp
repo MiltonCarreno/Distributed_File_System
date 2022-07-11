@@ -1,8 +1,12 @@
 #include "Controller.h"
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <vector>
+#include <thread>
+using namespace std;
 
 // Number of connection requests waiting to be accepted
 const int MAX_CONN_REQS = 2;
@@ -44,13 +48,18 @@ int main(int argc, char* argv[]) {
 
     // Accept connection request and create new connection socket
     bool newConnReq = server.listenConnection(MAX_CONN_REQS);
+    vector<thread> threads;
     int i = 0;
     while(newConnReq && i != MAX_CONN) {
         i++;
         printf("In while loop!");
         int conn = server.acceptConnection();
-        chat(conn);
+        threads.emplace_back(thread(chat, conn));
         newConnReq = server.listenConnection(MAX_CONN_REQS);
+    }
+
+    for (int i = 0; i<threads.size(); i++) {
+        threads[i].join();
     }
   
     // Close listening socket
