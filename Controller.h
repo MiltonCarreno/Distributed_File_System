@@ -11,7 +11,7 @@ class Controller {
         Controller();
         void createSocket();
         void bindSocket();
-        bool listenConnection(int);
+        void listenConnection(int);
         int acceptConnection();
         void shutdownSocket();
 };

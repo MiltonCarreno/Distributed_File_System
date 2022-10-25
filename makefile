@@ -5,9 +5,9 @@
 # CXX = Compiler
 CXX = g++
 
-dfs: Main.o Controller.o
+dfs: Main.o Controller.o	# Controller Node
 	$(CXX) -o dfs Main.o Controller.o
-client: client.cpp
+client: client.cpp			# Client Node
 	$(CXX) -o client client.cpp
 Main.o: Main.cpp
 	$(CXX) -std=c++17 -c Main.cpp

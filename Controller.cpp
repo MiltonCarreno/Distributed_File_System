@@ -32,32 +32,31 @@ void Controller::createSocket() {
 
 void Controller::bindSocket() {
     // Forcefully attaching socket to the port 8080
-    if (bind(newSocket, (struct sockaddr*)&address, sizeof(address)) < 0) {
+    if (bind(newSocket, (struct sockaddr*)&address, addressLen) < 0) {
         perror("bind failed");
         exit(EXIT_FAILURE);
     }
     printf("\nBound Socket\n");
 }
 
-bool Controller::listenConnection(int queueLen) {
+void Controller::listenConnection(int queueLen) {
     bool heard = (listen(newSocket, queueLen) == 0);
     if (!heard) {
         perror("listen");
         exit(EXIT_FAILURE);
     }
     printf("\nHeard Connection\n");
-    return heard;
 }
 
 int Controller::acceptConnection() {
-    int connection, conn = 0;
-    if ((connection = accept(newSocket, (struct sockaddr*)&address, (socklen_t*)&addressLen)) < 0) {
+    int connection = accept(newSocket, 
+    (struct sockaddr*)&address, (socklen_t*)&addressLen);
+    if (connection < 0) {
         perror("accept");
         exit(EXIT_FAILURE);
     }
-    conn = connection;
     printf("\nAccepted Connection\n");
-    return conn;
+    return connection;
 }
 
 void Controller::shutdownSocket() {

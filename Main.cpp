@@ -9,9 +9,9 @@
 using namespace std;
 
 // Number of connection requests waiting to be accepted
-const int MAX_CONN_REQS = 2;
+const int MAX_CONN_REQS = 1;
 // Number of total connections to be accepted
-const int MAX_CONN = 2;
+const int MAX_CONN = 3;
 
 void chat(int connection){
     char buff[1024];
@@ -22,10 +22,11 @@ void chat(int connection){
     while (continueChat) {
         bzero(buff, sizeof(buff));
         read(connection, buff, sizeof(buff));
-        printf("From client: %s\nTo client: ", buff);
+        printf("Client: %s\nController: ", buff);
         bzero(buff, sizeof(buff));
         n = 0;
-
+        
+        // cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         while ((buff[n++] = getchar()) != '\n');
         write(connection, buff, sizeof(buff));
         if (strncmp("exit", buff, 4) == 0) {
@@ -47,17 +48,17 @@ int main(int argc, char* argv[]) {
     server.bindSocket();
 
     // Accept connection request and create new connection socket
-    bool newConnReq = server.listenConnection(MAX_CONN_REQS);
     vector<thread> threads;
-    int i = 0;
-    while(newConnReq && i != MAX_CONN) {
-        i++;
+    for (int i = 0; i<MAX_CONN; i++) {
         printf("In while loop!");
+        server.listenConnection(MAX_CONN_REQS);
         int conn = server.acceptConnection();
+
+        // Delegate chatting/connections to individual threads
         threads.emplace_back(thread(chat, conn));
-        newConnReq = server.listenConnection(MAX_CONN_REQS);
     }
 
+    // Wait for all the threads to finish
     for (int i = 0; i<threads.size(); i++) {
         threads[i].join();
     }
