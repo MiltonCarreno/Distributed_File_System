@@ -47,5 +47,3 @@ void Client::closeConnection() {
         exit(EXIT_FAILURE);
     }
 }
-
-
