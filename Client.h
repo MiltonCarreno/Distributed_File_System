@@ -9,8 +9,8 @@ class Client {
 
     public:
         Client();
-        void createSocket();
-        int requestConnection();
-        void closeConnection(int);
+        int createSocket();
+        void requestConnection();
+        void closeConnection();
 };
 #endif
