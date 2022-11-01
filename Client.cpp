@@ -1,4 +1,5 @@
 #include "Client.h"
+#include "Message.cpp"
 #include <arpa/inet.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,10 +10,20 @@
 #define PORT 8080
 const char* LOCAL_HOST = "127.0.0.1";
 
-Client::Client(string file_path) {
+Client::Client(string file) {
     // Set file info
-    filePath = file_path;
-    fileSize = getFileInfo(file_path);
+    fstream fs;
+    fs.open(file, fstream::in | fstream::binary);
+    if (fs.is_open()) {
+        filePath = file;        // Save file path
+        fs.seekg(0, fs.end);
+        fileSize = fs.tellg();  // Get file size
+        fs.seekg(0, fs.beg);
+        fs.close();
+        printFileInfo();        // Print file info
+    } else {
+        cout << "File didn't open" << endl;
+    }
 
     // Set socket info
     address.sin_family = AF_INET;
@@ -26,14 +37,13 @@ Client::Client(string file_path) {
     printf("\nThis is the constructor\n");
 }
 
-int Client::createSocket() {
+void Client::createSocket() {
     // Creating socket file descriptor
     if ((newSocket = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
         perror("socket failed");
         exit(EXIT_FAILURE);
     }
     printf("\nCreated Socket\n");
-    return newSocket;
 }
 
 void Client::requestConnection() {
@@ -53,24 +63,12 @@ void Client::closeConnection() {
     }
 }
 
-int Client::getFileInfo(string file) {
-    fstream fs;
-    int length = 0;
-    fs.open(file, fstream::in | fstream::binary);
-    if (fs.is_open()) {
-        cout << "File opend!" << endl;
-        fs.seekg(0, fs.end);
-        length = fs.tellg();
-        fs.seekg(0, fs.beg);
-        // cout << "The length is "<< length << endl;
-        fs.close();
-    } else {
-        cout << "File didn't open" << endl;
-    }
-    return length;
-}
-
 void Client::printFileInfo() {
     cout << "File: " << filePath << endl;
     cout << "Size: " << fileSize << endl; 
+}
+
+void Client::sendMsg() {
+    Message msg = {store, filePath, fileSize};
+    send(newSocket, (const void*)&msg, sizeof(msg), 0);
 }

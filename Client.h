@@ -12,10 +12,10 @@ class Client {
 
     public:
         Client(string);
-        int createSocket();
+        void createSocket();
         void requestConnection();
         void closeConnection();
-        int getFileInfo(string);
         void printFileInfo();
+        void sendMsg();
 };
 #endif

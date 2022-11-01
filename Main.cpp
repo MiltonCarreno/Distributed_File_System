@@ -1,4 +1,5 @@
 #include "Controller.h"
+#include "Message.cpp"
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,8 +22,10 @@ void chat(int connection){
     // Continue chat until Controller quits
     while (continueChat) {
         bzero(buff, sizeof(buff));
-        read(connection, buff, sizeof(buff));
-        printf("Client: %s\nController: ", buff);
+        int size = 0;
+        read(connection, (void *)&size, sizeof(size));
+        cout << "Size of file: " << size << endl;
+        // printf("Client: %s\nController: ", buff);
         bzero(buff, sizeof(buff));
         n = 0;
         
@@ -38,6 +41,18 @@ void chat(int connection){
     // Close connection socket
     close(connection);
 }
+
+void chatFun(int connection){    
+    Message msg;
+    read(connection, (void *)&msg, sizeof(msg));
+    cout << "Message type: " << msg.msgType << endl;
+    cout << "Size of name: " << msg.fileName << endl;
+    cout << "Size of file: " << msg.fileSize << endl;
+
+    // Close connection socket
+    close(connection);
+}
+
 
 int main(int argc, char* argv[]) {
     // Create Controller
@@ -55,7 +70,7 @@ int main(int argc, char* argv[]) {
         int conn = server.acceptConnection();
 
         // Delegate chatting/connections to individual threads
-        threads.emplace_back(thread(chat, conn));
+        threads.emplace_back(thread(chatFun, conn));
     }
 
     // Wait for all the threads to finish

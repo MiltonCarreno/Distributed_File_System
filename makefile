@@ -16,6 +16,6 @@ client: Main2.o Client.o	# Client Node
 Main2.o: Main2.cpp
 	$(CXX) -std=c++17 -c Main2.cpp
 Client.o: Client.cpp
-	$(CXX) -c Client.cpp
+	$(CXX) -std=c++17 -c Client.cpp
 clean:
 	rm *.o dfs client
