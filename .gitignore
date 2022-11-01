@@ -2,5 +2,5 @@
 .DS_store
 
 # Ignore exe files
-client
-server
+data
+.vscode

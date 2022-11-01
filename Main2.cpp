@@ -2,10 +2,13 @@
 // programming
 #include <arpa/inet.h>
 #include <stdio.h>
-#include <string.h>
+#include <string>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <fstream>
+#include <iostream>
 #include "Client.h"
+using namespace std;
 
 void func(int sockfd)
 {
@@ -29,25 +32,32 @@ void func(int sockfd)
 }
 
 int main(int argc, char const* argv[]) {
-  int valread;
-  const char* hello = "Hello from client";
-  char buffer[1024] = { 0 };
+    int valread;
+    const char* hello = "Hello from client";
+    char buffer[1024] = { 0 };
 
-  // Create new client
-  Client client;
+    string file_path = argv[1];
+    cout << "File Path: " << file_path << endl;
+    
+    // Create new client
+    Client client(file_path);
 
-  // Creat new client socket
-  int sock = client.createSocket();
-  // Request connection with client socket
-  client.requestConnection();
-  // Chat with controller
-  send(sock, hello, strlen(hello), 0);
-  printf("Hello message sent\n");
-  valread = read(sock, buffer, 1024);
-  printf("%s\n", buffer);
-  // Chat
-  func(sock);
-  // Close connection
-  client.closeConnection();
-  return 0;
+    // Creat new client socket
+    int sock = client.createSocket();
+
+    // Print file info
+    client.printFileInfo();
+
+    // // Request connection with client socket
+    // client.requestConnection();
+    // // Chat with controller
+    // send(sock, hello, strlen(hello), 0);
+    // printf("Hello message sent\n");
+    // valread = read(sock, buffer, 1024);
+    // printf("%s\n", buffer);
+    // // Chat
+    // func(sock);
+    // // Close connection
+    // client.closeConnection();
+    return 0;
 }

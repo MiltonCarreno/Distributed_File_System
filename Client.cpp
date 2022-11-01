@@ -1,15 +1,20 @@
 #include "Client.h"
-#include <netinet/in.h>
 #include <arpa/inet.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <fstream>
+#include <iostream>
 #include <sys/socket.h>
 #include <unistd.h>
 #define PORT 8080
 const char* LOCAL_HOST = "127.0.0.1";
 
-Client::Client() {
+Client::Client(string file_path) {
+    // Set file info
+    filePath = file_path;
+    fileSize = getFileInfo(file_path);
+
+    // Set socket info
     address.sin_family = AF_INET;
     address.sin_port = htons(PORT);
     addressLen = sizeof(address);
@@ -46,4 +51,26 @@ void Client::closeConnection() {
     if (connection < 0) {
         exit(EXIT_FAILURE);
     }
+}
+
+int Client::getFileInfo(string file) {
+    fstream fs;
+    int length = 0;
+    fs.open(file, fstream::in | fstream::binary);
+    if (fs.is_open()) {
+        cout << "File opend!" << endl;
+        fs.seekg(0, fs.end);
+        length = fs.tellg();
+        fs.seekg(0, fs.beg);
+        // cout << "The length is "<< length << endl;
+        fs.close();
+    } else {
+        cout << "File didn't open" << endl;
+    }
+    return length;
+}
+
+void Client::printFileInfo() {
+    cout << "File: " << filePath << endl;
+    cout << "Size: " << fileSize << endl; 
 }
