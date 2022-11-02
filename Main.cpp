@@ -14,34 +14,6 @@ const int MAX_CONN_REQS = 1;
 // Number of total connections to be accepted
 const int MAX_CONN = 3;
 
-void chat(int connection){
-    char buff[1024];
-    bool continueChat = true;
-    int n;
-
-    // Continue chat until Controller quits
-    while (continueChat) {
-        bzero(buff, sizeof(buff));
-        int size = 0;
-        read(connection, (void *)&size, sizeof(size));
-        cout << "Size of file: " << size << endl;
-        // printf("Client: %s\nController: ", buff);
-        bzero(buff, sizeof(buff));
-        n = 0;
-        
-        // cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        while ((buff[n++] = getchar()) != '\n');
-        write(connection, buff, sizeof(buff));
-        if (strncmp("exit", buff, 4) == 0) {
-            printf("Server Exit...\n");
-            continueChat = false;
-        }
-    }
-
-    // Close connection socket
-    close(connection);
-}
-
 void chatFun(int connection){    
     Message msg;
     read(connection, (void *)&msg, sizeof(msg));
@@ -52,7 +24,6 @@ void chatFun(int connection){
     // Close connection socket
     close(connection);
 }
-
 
 int main(int argc, char* argv[]) {
     // Create Controller
