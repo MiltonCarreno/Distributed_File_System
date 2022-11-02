@@ -4,7 +4,7 @@
 # CXXFLAGS = Compiler flags
 # CXX = Compiler
 CXX = g++
-all: dfs client				# Targets to run
+all: dfs client storage		# Targets to run
 dfs: Main.o Controller.o	# Controller Node
 	$(CXX) -o dfs Main.o Controller.o
 Main.o: Main.cpp
@@ -17,5 +17,11 @@ Main2.o: Main2.cpp
 	$(CXX) -std=c++17 -c Main2.cpp
 Client.o: Client.cpp
 	$(CXX) -std=c++17 -c Client.cpp
+storage: Main3.o Storage.o	# Storage Node
+	$(CXX) -o storage Main3.o Storage.o
+Main3.o: Main3.cpp
+	$(CXX) -std=c++17 -c Main3.cpp
+Storage.o: Storage.cpp
+	$(CXX) -std=c++17 -c Storage.cpp
 clean:
-	rm *.o dfs client
+	rm *.o dfs client storage

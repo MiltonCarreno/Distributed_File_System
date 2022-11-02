@@ -10,9 +10,10 @@ class Storage {
         struct sockaddr_in address;
 
     public:
-        Storage(string);
+        Storage();
         void createSocket();
         void requestConnection();
         void closeConnection();
+        void sendMsg();
 };
 #endif

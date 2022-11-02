@@ -25,7 +25,7 @@ void chatFun(int connection){
     close(connection);
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     // Create Controller
     Controller server;
 

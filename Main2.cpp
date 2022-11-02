@@ -10,14 +10,14 @@
 #include "Client.h"
 using namespace std;
 
-int main(int argc, char const* argv[]) {
-    // Create new client
+int main(int argc, char *argv[]) {
+    // Create new client node
     Client client(argv[1]);
 
-    // Creat new client socket
+    // Creat new socket
     client.createSocket();
 
-    // Request connection with controller
+    // Request connection with controller node
     client.requestConnection();
 
     // Send file info

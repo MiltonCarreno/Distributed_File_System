@@ -10,7 +10,7 @@
 #define PORT 8080
 const char* LOCAL_HOST = "127.0.0.1";
 
-Storage::Storage(string file) {
+Storage::Storage() {
     // Set socket info
     address.sin_family = AF_INET;
     address.sin_port = htons(PORT);
@@ -47,4 +47,9 @@ void Storage::closeConnection() {
     if (connection < 0) {
         exit(EXIT_FAILURE);
     }
+}
+
+void Storage::sendMsg() {
+    Message msg = {heartbeat, "", 0};
+    send(newSocket, (const void*)&msg, sizeof(msg), 0);
 }
