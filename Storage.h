@@ -2,7 +2,6 @@
 #define STORAGE_H
 #include <netinet/in.h>
 #include <string>
-using namespace std;
 
 class Storage {
     private:
@@ -17,6 +16,9 @@ class Storage {
         void createSocket();
         void requestConnection();
         void closeConnection();
+        void bindSocket();
+        void listenConnection(int);
+        int acceptConnection();
         void sendBeat();
 };
 #endif

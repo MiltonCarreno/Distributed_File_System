@@ -1,11 +1,12 @@
 #include "Storage.h"
 #include "Message.cpp"
+#include <sys/socket.h>
 #include <arpa/inet.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <fstream>
 #include <iostream>
-#include <sys/socket.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #define PORT_ONE 8080
 #define PORT_TWO 9090
@@ -65,6 +66,39 @@ void Storage::closeConnection() {
     if (connection < 0) {
         exit(EXIT_FAILURE);
     }
+    connection = close(sqSocket);
+    if (connection < 0) {
+        exit(EXIT_FAILURE);
+    }
+}
+
+void Storage::bindSocket() {
+    // Forcefully attaching socket to the port 8080
+    if (bind(sqSocket, (struct sockaddr*)&sqAddress, sqLen) < 0) {
+        perror("bind failed");
+        exit(EXIT_FAILURE);
+    }
+    printf("\nBound Socket\n");
+}
+
+void Storage::listenConnection(int queueLen) {
+    bool heard = (listen(sqSocket, queueLen) == 0);
+    if (!heard) {
+        perror("listen");
+        exit(EXIT_FAILURE);
+    }
+    printf("\nHeard Connection\n");
+}
+
+int Storage::acceptConnection() {
+    int connection = accept(sqSocket, 
+    (struct sockaddr*)&sqAddress, (socklen_t*)&sqLen);
+    if (connection < 0) {
+        perror("accept");
+        exit(EXIT_FAILURE);
+    }
+    printf("\nAccepted Connection\n");
+    return connection;
 }
 
 void Storage::sendBeat() {

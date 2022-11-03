@@ -30,23 +30,31 @@ void chatFun(int connection){
 int main(int agrc, char *argv[]) {
     // Create new storage node
     Storage storage;
-    // Create new socket
+    // Create new sockets
     storage.createSocket();
     // Request connection with controller node
     storage.requestConnection();
+    // Bind store/query socket
+    storage.bindSocket();
     // Delegate heartbeat
     vector<thread> threads;
     threads.emplace_back(thread(&Storage::sendBeat, &storage));
     // Accept connection request and create new connection socket
     for (int i = 0; i<MAX_CONN; i++) {
         printf("In while loop!");
-        server.listenConnection(MAX_CONN_REQS);
-        int conn = server.acceptConnection();
+        storage.listenConnection(MAX_CONN_REQS);
+        int conn = storage.acceptConnection();
 
         // Delegate chatting/connections to individual threads
         threads.emplace_back(thread(chatFun, conn));
     }
 
+    // Wait for all the threads to finish
+    for (int i = 0; i<threads.size(); i++) {
+        threads[i].join();
+    }
+
     // Close connection
     storage.closeConnection();
+    return 0;
 }
