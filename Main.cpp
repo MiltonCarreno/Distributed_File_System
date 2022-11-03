@@ -17,9 +17,21 @@ const int MAX_CONN = 3;
 void chatFun(int connection){    
     Message msg;
     read(connection, (void *)&msg, sizeof(msg));
-    cout << "Message type: " << msg.msgType << endl;
-    cout << "Size of name: " << msg.fileName << endl;
-    cout << "Size of file: " << msg.fileSize << endl;
+    if (msg.msgType != heartbeat) {
+        cout << "******************************" << endl;
+        cout << "|---------Client Msg----------" << endl;
+        cout << "Message type: " << msg.msgType << endl;
+        cout << "Size of name: " << msg.fileName << endl;
+        cout << "Size of file: " << msg.fileSize << endl;
+        cout << "******************************" << endl;
+    } else {
+        cout << "******************************" << endl;
+        cout << "|---------Storage Msg---------" << endl;
+        cout << "Message type: " << msg.msgType << endl;
+        cout << "Size of name: " << msg.fileName << endl;
+        cout << "Size of file: " << msg.fileSize << endl;
+        cout << "******************************" << endl;
+    }
 
     // Close connection socket
     close(connection);

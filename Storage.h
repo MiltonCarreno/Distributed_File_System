@@ -6,14 +6,17 @@ using namespace std;
 
 class Storage {
     private:
-        int newSocket, addressLen;
-        struct sockaddr_in address;
+        // heartbeat and store/query sockets
+        int hbSocket, sqSocket, hbLen, sqLen, opt;
+        // heartbeat and store/query address
+        struct sockaddr_in hbAddress, sqAddress;
 
     public:
         Storage();
+        void beat();
         void createSocket();
         void requestConnection();
         void closeConnection();
-        void sendMsg();
+        void sendBeat();
 };
 #endif

@@ -7,34 +7,52 @@
 #include <iostream>
 #include <sys/socket.h>
 #include <unistd.h>
-#define PORT 8080
+#define PORT_ONE 8080
+#define PORT_TWO 9090
 const char* LOCAL_HOST = "127.0.0.1";
 
 Storage::Storage() {
-    // Set socket info
-    address.sin_family = AF_INET;
-    address.sin_port = htons(PORT);
-    addressLen = sizeof(address);
+    // Set heartbeat socket
+    hbAddress.sin_family = AF_INET;
+    hbAddress.sin_port = htons(PORT_ONE);
+    hbLen = sizeof(hbAddress);
 
-    if (inet_pton(AF_INET, LOCAL_HOST, &address.sin_addr) <= 0) {
+    if (inet_pton(AF_INET, LOCAL_HOST, &hbAddress.sin_addr) <= 0) {
         printf("\nInvalid address/ Address not supported \n");
     }
+
+    // Set store/query socket
+    sqAddress.sin_family = AF_INET;
+    sqAddress.sin_addr.s_addr = INADDR_ANY;
+    sqAddress.sin_port = htons(PORT_TWO);
+    sqLen = sizeof(sqAddress);
+    opt = 1;
 
     printf("\nThis is the constructor\n");
 }
 
 void Storage::createSocket() {
-    // Creating socket file descriptor
-    if ((newSocket = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-        perror("socket failed");
+    // Creating heartbeat socket
+    if ((hbSocket = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+        perror("HeartBeat Socket Failed");
         exit(EXIT_FAILURE);
     }
-    printf("\nCreated Socket\n");
+    // Creating store/query socket
+    if ((sqSocket = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+        perror("Store/Query Socket Failed");
+        exit(EXIT_FAILURE);
+    }
+    // Forcefully attaching store/query socket to port 9090
+    if (setsockopt(sqSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt))) {
+        perror("setsockopt");
+        exit(EXIT_FAILURE);
+    }
+    printf("\nCreated Sockets\n");
 }
 
 void Storage::requestConnection() {
-    int connection = connect(newSocket, 
-    (struct sockaddr*)&address, (socklen_t)addressLen);
+    int connection = connect(hbSocket, 
+    (struct sockaddr*)&hbAddress, (socklen_t)hbLen);
     if (connection < 0) {
         perror("Connection request error");
         exit(EXIT_FAILURE);
@@ -43,13 +61,13 @@ void Storage::requestConnection() {
 }
 
 void Storage::closeConnection() {
-    int connection = close(newSocket);
+    int connection = close(hbSocket);
     if (connection < 0) {
         exit(EXIT_FAILURE);
     }
 }
 
-void Storage::sendMsg() {
+void Storage::sendBeat() {
     Message msg = {heartbeat, "", 0};
-    send(newSocket, (const void*)&msg, sizeof(msg), 0);
+    send(hbSocket, (const void*)&msg, sizeof(msg), 0);
 }
