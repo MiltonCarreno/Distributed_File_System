@@ -12,7 +12,6 @@ class Storage {
 
     public:
         Storage();
-        void beat();
         void createSocket();
         void requestConnection();
         void closeConnection();

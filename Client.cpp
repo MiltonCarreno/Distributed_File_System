@@ -72,7 +72,8 @@ void Client::sendMsg() {
     // fstream fs;   
     // fs.open(filePath, fstream::in | fstream::binary);
 
-    FileInfo ff = {filePath, fileSize};
-    Message msg = {store, &ff};
+    MessageType msgType = store;
+    FileInfo msg = {filePath, fileSize};
+    send(newSocket, (const void*)&msgType, sizeof(msgType), 0);
     send(newSocket, (const void*)&msg, sizeof(msg), 0);
 }

@@ -15,21 +15,26 @@ const int MAX_CONN_REQS = 1;
 const int MAX_CONN = 3;
 
 void chatFun(int connection){    
-    Message msg;
-    read(connection, (void *)&msg, sizeof(msg));
-    if (msg.msgType != heartbeat) {
+    // Message msg;
+    MessageType msgType;
+    read(connection, (void *)&msgType, sizeof(msgType));
+    if (msgType != heartbeat) {
+        FileInfo file;
+        read(connection, (void *)&file, sizeof(file));
         cout << "******************************" << endl;
         cout << "|---------Client Msg----------" << endl;
-        cout << "Message type: " << msg.msgType << endl;
-        cout << "Size of name: " << msg.fileName << endl;
-        cout << "Size of file: " << msg.fileSize << endl;
+        cout << "Message type: " << msgType << endl;
+        cout << "Size of name: " << file.name << endl;
+        cout << "Size of file: " << file.size << endl;
         cout << "******************************" << endl;
     } else {
+        Heartbeat beat;
+        read(connection, (void *)&beat, sizeof(beat));
         cout << "******************************" << endl;
         cout << "|---------Storage Msg---------" << endl;
-        cout << "Message type: " << msg.msgType << endl;
-        cout << "Size of name: " << msg.fileName << endl;
-        cout << "Size of file: " << msg.fileSize << endl;
+        cout << "Message type: " << msgType << endl;
+        cout << "Size of name: " << beat.data << endl;
+        cout << "Size of file: " << beat.port << endl;
         cout << "******************************" << endl;
     }
 

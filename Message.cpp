@@ -16,8 +16,8 @@ struct Nodes {
 };
 // Struct containing storage node info
 struct Heartbeat {
-    std::string data;
-    int port;
+    std::string data = "";
+    int port = 0;
 };
 // Struct containing message type and content (i.e. message)
 struct Message {
