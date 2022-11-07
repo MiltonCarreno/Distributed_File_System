@@ -15,11 +15,12 @@ void chatFun(int connection){
     Message msg;
     read(connection, (void *)&msg, sizeof(msg));
     if (msg.msgType != heartbeat) {
+        FileInfo *file = (FileInfo *) msg.content;
         cout << "******************************" << endl;
         cout << "|---------Client Msg----------" << endl;
         cout << "Message type: " << msg.msgType << endl;
-        cout << "Size of name: " << msg.fileName << endl;
-        cout << "Size of file: " << msg.fileSize << endl;
+        cout << "Size of name: " << file->name << endl;
+        cout << "Size of file: " << file->size << endl;
         cout << "******************************" << endl;
     }
 

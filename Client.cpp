@@ -7,7 +7,7 @@
 #include <iostream>
 #include <sys/socket.h>
 #include <unistd.h>
-#define PORT 8080
+#define PORT 9090
 const char* LOCAL_HOST = "127.0.0.1";
 
 Client::Client(string file) {
@@ -69,6 +69,10 @@ void Client::printFileInfo() {
 }
 
 void Client::sendMsg() {
-    Message msg = {store, filePath, fileSize};
+    // fstream fs;   
+    // fs.open(filePath, fstream::in | fstream::binary);
+
+    FileInfo ff = {filePath, fileSize};
+    Message msg = {store, &ff};
     send(newSocket, (const void*)&msg, sizeof(msg), 0);
 }
