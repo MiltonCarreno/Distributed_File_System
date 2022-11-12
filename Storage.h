@@ -5,6 +5,7 @@
 
 class Storage {
     private:
+        int space; // Space currently available to storage node
         // heartbeat and store/query sockets
         int hbSocket, sqSocket, hbLen, sqLen, opt;
         // heartbeat and store/query address

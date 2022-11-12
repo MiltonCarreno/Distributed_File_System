@@ -13,6 +13,8 @@
 const char* LOCAL_HOST = "127.0.0.1";
 
 Storage::Storage() {
+    // Set amount space for storage node (2 MB)
+    space = 2000000;
     // Set heartbeat socket
     hbAddress.sin_family = AF_INET;
     hbAddress.sin_port = htons(PORT_ONE);

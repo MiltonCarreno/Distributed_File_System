@@ -14,7 +14,7 @@ const int MAX_CONN_REQS = 1;
 // Number of total connections to be accepted
 const int MAX_CONN = 3;
 
-void chatFun(int connection){    
+void chatFun(Controller *serv, int connection){    
     // Message msg;
     MessageType msgType;
     read(connection, (void *)&msgType, sizeof(msgType));
@@ -36,6 +36,7 @@ void chatFun(int connection){
         cout << "Size of name: " << beat.data << endl;
         cout << "Size of file: " << beat.port << endl;
         cout << "******************************" << endl;
+        serv->addStorageNode(beat.port, 2000000);
     }
 
     // Close connection socket
@@ -58,7 +59,7 @@ int main(int argc, char *argv[]) {
         int conn = server.acceptConnection();
 
         // Delegate chatting/connections to individual threads
-        threads.emplace_back(thread(chatFun, conn));
+        threads.emplace_back(thread(chatFun, &server, conn));
     }
 
     // Wait for all the threads to finish

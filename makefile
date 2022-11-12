@@ -10,7 +10,7 @@ dfs: Main.o Controller.o	# Controller Node
 Main.o: Main.cpp
 	$(CXX) -std=c++17 -c Main.cpp
 Controller.o: Controller.cpp
-	$(CXX) -c Controller.cpp
+	$(CXX) -std=c++17 -c Controller.cpp
 client: Main2.o Client.o	# Client Node
 	$(CXX) -o client Main2.o Client.o
 Main2.o: Main2.cpp

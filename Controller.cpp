@@ -5,6 +5,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <iostream>
 #define PORT 8080
 
 Controller::Controller() {
@@ -64,3 +65,15 @@ void Controller::shutdownSocket() {
     printf("\nShutdown Listening Socket!\n");
 }
 
+void Controller::addStorageNode(int nodePort, int space) {
+    const std::lock_guard<std::mutex> lock(mapMutex);
+    map[nodePort] = space;
+    for (const auto& [key, val] : map) {
+        std::cout << '[' << key << "] = " << val << "; ";
+    }
+    std::cout << '\n';
+}
+
+bool Controller::checkStorageNode() {
+
+}
