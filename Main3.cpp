@@ -31,7 +31,7 @@ void chatFun(int connection){
 
 int main(int agrc, char *argv[]) {
     // Create new storage node
-    Storage storage;
+    Storage storage(atoi(argv[1]));
     // Create new sockets
     storage.createSocket();
     // Request connection with controller node

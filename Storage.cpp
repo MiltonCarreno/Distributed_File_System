@@ -12,8 +12,9 @@
 #define PORT_TWO 9090
 const char* LOCAL_HOST = "127.0.0.1";
 
-Storage::Storage() {
-    // Set amount space for storage node (2 MB)
+Storage::Storage(int storagePort) {
+    // Set port and amount space for storage node (2 MB)
+    port = storagePort;
     space = 2000000;
     // Set heartbeat socket
     hbAddress.sin_family = AF_INET;
@@ -27,7 +28,7 @@ Storage::Storage() {
     // Set store/query socket
     sqAddress.sin_family = AF_INET;
     sqAddress.sin_addr.s_addr = INADDR_ANY;
-    sqAddress.sin_port = htons(PORT_TWO);
+    sqAddress.sin_port = htons(storagePort);
     sqLen = sizeof(sqAddress);
     opt = 1;
 
@@ -104,7 +105,7 @@ int Storage::acceptConnection() {
 }
 
 void Storage::sendBeat() {
-    Heartbeat hb = {"This/is/a/path", 718};
+    Heartbeat hb = {"This/is/a/path", port};
     MessageType msgType = heartbeat;
     send(hbSocket, (const void*)&msgType, sizeof(msgType), 0);
     send(hbSocket, (const void*)&hb, sizeof(hb), 0);
