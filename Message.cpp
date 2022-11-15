@@ -10,14 +10,16 @@ struct FileInfo {
 struct Chunk {
 
 };
-// Struct containing storage nodes to send chunks to 
-struct Nodes {
-    std::string nodes;
+// Struct containing storage node info to be used to send chunks to 
+struct StorageNodeInfo {
+    int port;
+    int space;
 };
 // Struct containing storage node info
 struct Heartbeat {
     std::string data = "";
     int port = 0;
+    int space = 0;
 };
 // Struct containing message type and content (i.e. message)
 struct Message {

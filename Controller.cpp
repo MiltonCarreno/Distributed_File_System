@@ -65,15 +65,40 @@ void Controller::shutdownSocket() {
     printf("\nShutdown Listening Socket!\n");
 }
 
-void Controller::addStorageNode(int nodePort, int space) {
+void Controller::addStorageNode(int nodePort, int nodeSpace) {
     const std::lock_guard<std::mutex> lock(mapMutex);
-    map[nodePort] = space;
+    map[nodePort] = nodeSpace;
     for (const auto& [key, val] : map) {
         std::cout << '[' << key << "] = " << val << "; ";
     }
     std::cout << '\n';
 }
 
-bool Controller::checkStorageNode() {
-
+std::map<int,int> Controller::getFreeStorageNodes(int fileSize) {
+    const std::lock_guard<std::mutex> lock(mapMutex);
+    std::map<int,int> availableNodes;
+    if (map.size() <= 3) {
+        availableNodes.insert(map.begin(), map.end());
+    } else {
+        for (const auto& [key, val]: map) {
+            if (fileSize/3 <= val) {
+                availableNodes[key] = val;
+            }
+        }
+    }
+    return availableNodes;
 }
+
+std::vector<int> Controller::getFreeStorageNodesV(int fileSize) {
+    const std::lock_guard<std::mutex> lock(mapMutex);
+    std::vector<int> availableNodes;
+    for (const auto& [key, val]: map) {
+        availableNodes.push_back(key);
+    }
+    return availableNodes;
+}
+
+// std::map<int,int> Controller::sendAvailableStorageNodes(int fileSize) {
+//     std::map<int,int> freeNodes = getFreeStorageNodes(fileSize);
+
+// }

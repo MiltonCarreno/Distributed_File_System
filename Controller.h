@@ -4,6 +4,7 @@
 #include <mutex>
 #include <thread>
 #include <map>
+#include <vector>
 
 class Controller {
     private:
@@ -20,6 +21,8 @@ class Controller {
         int acceptConnection();
         void shutdownSocket();
         void addStorageNode(int, int);
-        bool checkStorageNode();
+        std::map<int,int>getFreeStorageNodes(int);
+        std::vector<int>getFreeStorageNodesV(int);
+        // std::map<int,int> sendAvailableStorageNodes(int);
 };
 #endif

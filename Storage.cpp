@@ -105,7 +105,7 @@ int Storage::acceptConnection() {
 }
 
 void Storage::sendBeat() {
-    Heartbeat hb = {"This/is/a/path", port};
+    Heartbeat hb = {"This/is/a/path", port, space};
     MessageType msgType = heartbeat;
     send(hbSocket, (const void*)&msgType, sizeof(msgType), 0);
     send(hbSocket, (const void*)&hb, sizeof(hb), 0);

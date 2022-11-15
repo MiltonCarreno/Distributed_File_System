@@ -7,15 +7,15 @@ using namespace std;
 class Client {
     private:
         string filePath;
-        int fileSize, newSocket, addressLen;
+        int fileSize, newSocket, addressLen, port;
         struct sockaddr_in address;
 
     public:
-        Client(string);
+        Client(int, string);
         void createSocket();
         void requestConnection();
         void closeConnection();
         void printFileInfo();
-        void sendMsg();
+        void sendStoreMsg();
 };
 #endif

@@ -7,10 +7,11 @@
 #include <iostream>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <vector>
 #define PORT 9090
 const char* LOCAL_HOST = "127.0.0.1";
 
-Client::Client(string file) {
+Client::Client(int port, string file) {
     // Set file info
     fstream fs;
     fs.open(file, fstream::in | fstream::binary);
@@ -27,7 +28,7 @@ Client::Client(string file) {
 
     // Set socket info
     address.sin_family = AF_INET;
-    address.sin_port = htons(PORT);
+    address.sin_port = htons(port);
     addressLen = sizeof(address);
 
     if (inet_pton(AF_INET, LOCAL_HOST, &address.sin_addr) <= 0) {
@@ -68,12 +69,28 @@ void Client::printFileInfo() {
     cout << "Size: " << fileSize << endl; 
 }
 
-void Client::sendMsg() {
+void Client::sendStoreMsg() {
     // fstream fs;   
     // fs.open(filePath, fstream::in | fstream::binary);
-
+    // Send file info to Controller
     MessageType msgType = store;
     FileInfo msg = {filePath, fileSize};
     send(newSocket, (const void*)&msgType, sizeof(msgType), 0);
     send(newSocket, (const void*)&msg, sizeof(msg), 0);
+    // Get storage nodes from Controller
+    int numNodes = 0;
+    read(newSocket, (void *)&numNodes, sizeof(numNodes));
+    std::cout << "# items: " << numNodes << endl;
+    std::vector<int> nodes;
+
+    for (int i = 0; i < numNodes; i++) {
+        int n;
+        read(newSocket, (void *)&n, sizeof(n));
+        nodes.push_back(n);
+    }
+
+    for (int e : nodes) {
+        std::cout << e << ", ";
+    }
+    std::cout << '\n';
 }

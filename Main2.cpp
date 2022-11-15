@@ -12,7 +12,7 @@ using namespace std;
 
 int main(int argc, char *argv[]) {
     // Create new client node
-    Client client(argv[1]);
+    Client client(atoi(argv[1]), argv[2]);
 
     // Creat new socket
     client.createSocket();
@@ -21,8 +21,10 @@ int main(int argc, char *argv[]) {
     client.requestConnection();
 
     // Send file info
-    client.sendMsg();
+    client.sendStoreMsg();
     
+    // Send chunks to Controller-provided storage nodes
+
     // Close connection
     client.closeConnection();
     return 0;
