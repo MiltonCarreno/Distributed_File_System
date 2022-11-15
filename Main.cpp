@@ -14,8 +14,7 @@ const int MAX_CONN_REQS = 1;
 // Number of total connections to be accepted
 const int MAX_CONN = 3;
 
-void chatFun(Controller *serv, int connection){    
-    // Message msg;
+void chatFun(Controller *serv, int connection) {
     MessageType msgType;
     read(connection, (void *)&msgType, sizeof(msgType));
     if (msgType != heartbeat) {
@@ -27,31 +26,19 @@ void chatFun(Controller *serv, int connection){
         cout << "Size of name: " << file.name << endl;
         cout << "Size of file: " << file.size << endl;
         cout << "******************************" << endl;
-
-        // std::map<int,int> nodes = serv->getFreeStorageNodes(file.size);
-        // cout << "\n-------------Nodes--------------" << endl;
-        // for (const auto& [key, val] : nodes) {
-        //     std::cout << '[' << key << "] = " << val << "; ";
-        // }
-        // cout << "\n------------------------------\n" << endl;
-        // int mapSize = nodes.size();
-        // send(connection, (const void*)&mapSize, sizeof(mapSize), 0);
-        // int s = send(connection, (const void*)&nodes, sizeof(nodes), 0);
-        // cout << "Map Bytes Size: " << sizeof(nodes) << endl;
-        // cout << "Bytes Sent: " << s << endl;
-
-        std::vector<int> nodes = serv->getFreeStorageNodesV(file.size);
+        // Get storage nodes with free space
+        std::vector<int> nodes = serv->getFreeStorageNodes(file.size);
         cout << "\n-------------Nodes--------------" << endl;
         for (const auto& n : nodes) {
             std::cout << n << "; ";
         }
         cout << "\n------------------------------\n" << endl;
-        int mapSize = nodes.size();
-        send(connection, (const void*)&mapSize, sizeof(mapSize), 0);
-
-        for (int i = 0; i < mapSize; i++) {
-            int n = nodes[i];
-            send(connection, (const void*)&n, sizeof(n), 0);        
+        // Send storage node info one by one
+        int numNodes = nodes.size();
+        send(connection, (const void*)&numNodes, sizeof(numNodes), 0);
+        for (int i = 0; i < numNodes; i++) {
+            int node = nodes[i];
+            send(connection, (const void*)&node, sizeof(node), 0);
         }
 
     } else {

@@ -21,8 +21,6 @@ class Controller {
         int acceptConnection();
         void shutdownSocket();
         void addStorageNode(int, int);
-        std::map<int,int>getFreeStorageNodes(int);
-        std::vector<int>getFreeStorageNodesV(int);
-        // std::map<int,int> sendAvailableStorageNodes(int);
+        std::vector<int>getFreeStorageNodes(int);
 };
 #endif

@@ -1,5 +1,3 @@
-// Client side C/C++ program to demonstrate Socket
-// programming
 #include <arpa/inet.h>
 #include <stdio.h>
 #include <string>
@@ -22,6 +20,9 @@ int main(int argc, char *argv[]) {
 
     // Send file info
     client.sendStoreMsg();
+
+    // Get storage nodes
+    client.getStorageNodes();
     
     // Send chunks to Controller-provided storage nodes
 

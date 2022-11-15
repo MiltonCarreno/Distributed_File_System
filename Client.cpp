@@ -70,27 +70,30 @@ void Client::printFileInfo() {
 }
 
 void Client::sendStoreMsg() {
-    // fstream fs;   
-    // fs.open(filePath, fstream::in | fstream::binary);
     // Send file info to Controller
     MessageType msgType = store;
     FileInfo msg = {filePath, fileSize};
     send(newSocket, (const void*)&msgType, sizeof(msgType), 0);
     send(newSocket, (const void*)&msg, sizeof(msg), 0);
-    // Get storage nodes from Controller
+}
+
+void Client::getStorageNodes() {
+    // Get number of available storage nodes from Controller
     int numNodes = 0;
     read(newSocket, (void *)&numNodes, sizeof(numNodes));
-    std::cout << "# items: " << numNodes << endl;
+    // Get one by one the storage nodes
     std::vector<int> nodes;
-
     for (int i = 0; i < numNodes; i++) {
-        int n;
-        read(newSocket, (void *)&n, sizeof(n));
-        nodes.push_back(n);
+        int node;
+        read(newSocket, (void *)&node, sizeof(node));
+        nodes.push_back(node);
     }
-
+    // Print the received storage nodes
     for (int e : nodes) {
         std::cout << e << ", ";
     }
     std::cout << '\n';
 }
+
+    // fstream fs;   
+    // fs.open(filePath, fstream::in | fstream::binary);

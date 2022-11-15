@@ -7,7 +7,7 @@ using namespace std;
 class Client {
     private:
         string filePath;
-        int fileSize, newSocket, addressLen, port;
+        int fileSize, newSocket, addressLen;
         struct sockaddr_in address;
 
     public:
@@ -17,5 +17,6 @@ class Client {
         void closeConnection();
         void printFileInfo();
         void sendStoreMsg();
+        void getStorageNodes();
 };
 #endif

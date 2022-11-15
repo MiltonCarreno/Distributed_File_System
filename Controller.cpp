@@ -74,22 +74,7 @@ void Controller::addStorageNode(int nodePort, int nodeSpace) {
     std::cout << '\n';
 }
 
-std::map<int,int> Controller::getFreeStorageNodes(int fileSize) {
-    const std::lock_guard<std::mutex> lock(mapMutex);
-    std::map<int,int> availableNodes;
-    if (map.size() <= 3) {
-        availableNodes.insert(map.begin(), map.end());
-    } else {
-        for (const auto& [key, val]: map) {
-            if (fileSize/3 <= val) {
-                availableNodes[key] = val;
-            }
-        }
-    }
-    return availableNodes;
-}
-
-std::vector<int> Controller::getFreeStorageNodesV(int fileSize) {
+std::vector<int> Controller::getFreeStorageNodes(int fileSize) {
     const std::lock_guard<std::mutex> lock(mapMutex);
     std::vector<int> availableNodes;
     for (const auto& [key, val]: map) {
@@ -97,8 +82,3 @@ std::vector<int> Controller::getFreeStorageNodesV(int fileSize) {
     }
     return availableNodes;
 }
-
-// std::map<int,int> Controller::sendAvailableStorageNodes(int fileSize) {
-//     std::map<int,int> freeNodes = getFreeStorageNodes(fileSize);
-
-// }
