@@ -21,11 +21,14 @@ Client::Client(int port, string file) {
         fileSize = fs.tellg();  // Get file size
         fs.seekg(0, fs.beg);
         fs.close();
-        printFileInfo();        // Print file info
     } else {
         cout << "File didn't open" << endl;
     }
+    setSocket(port);
+    printf("\nThis is the constructor\n");
+}
 
+void Client::setSocket(int port) {
     // Set socket info
     address.sin_family = AF_INET;
     address.sin_port = htons(port);
@@ -34,8 +37,6 @@ Client::Client(int port, string file) {
     if (inet_pton(AF_INET, LOCAL_HOST, &address.sin_addr) <= 0) {
         printf("\nInvalid address/ Address not supported \n");
     }
-
-    printf("\nThis is the constructor\n");
 }
 
 void Client::createSocket() {
@@ -64,12 +65,7 @@ void Client::closeConnection() {
     }
 }
 
-void Client::printFileInfo() {
-    cout << "File: " << filePath << endl;
-    cout << "Size: " << fileSize << endl; 
-}
-
-void Client::sendStoreMsg() {
+void Client::sendFileInfo() {
     // Send file info to Controller
     MessageType msgType = store;
     FileInfo msg = {filePath, fileSize};
@@ -82,18 +78,27 @@ void Client::getStorageNodes() {
     int numNodes = 0;
     read(newSocket, (void *)&numNodes, sizeof(numNodes));
     // Get one by one the storage nodes
-    std::vector<int> nodes;
     for (int i = 0; i < numNodes; i++) {
         int node;
         read(newSocket, (void *)&node, sizeof(node));
         nodes.push_back(node);
     }
-    // Print the received storage nodes
-    for (int e : nodes) {
-        std::cout << e << ", ";
-    }
-    std::cout << '\n';
 }
 
-    // fstream fs;   
-    // fs.open(filePath, fstream::in | fstream::binary);
+void Client::sendChunks() {
+    // Get file chunks
+    fstream fs;
+    fs.open(filePath, fstream::in | fstream::binary);
+
+    // Connect to Storage nodes one by one
+    for (int node: nodes) {
+        setSocket(node);
+        createSocket();
+        requestConnection();
+        // Send chunk
+        byte chunk;
+        send(newSocket, (void *)&chunk, sizeof(chunk), 0);
+        closeConnection();
+    }
+
+}

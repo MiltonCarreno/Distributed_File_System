@@ -15,16 +15,17 @@ int main(int argc, char *argv[]) {
     // Creat new socket
     client.createSocket();
 
-    // Request connection with controller node
+    // Request connection with Controller node
     client.requestConnection();
 
     // Send file info
-    client.sendStoreMsg();
+    client.sendFileInfo();
 
-    // Get storage nodes
+    // Get Storage nodes from Controller
     client.getStorageNodes();
     
-    // Send chunks to Controller-provided storage nodes
+    // Send chunks to Storage nodes
+    // client.sendChunks();
 
     // Close connection
     client.closeConnection();
