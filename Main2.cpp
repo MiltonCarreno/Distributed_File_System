@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
     client.getStorageNodes();
     
     // Send chunks to Storage nodes
-    // client.sendChunks();
+    client.sendChunks();
 
     // Close connection
     client.closeConnection();

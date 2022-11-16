@@ -9,20 +9,24 @@ using namespace std;
 // Number of connection requests waiting to be accepted
 const int MAX_CONN_REQS = 1;
 // Number of total connections to be accepted
-const int MAX_CONN = 3;
+const int MAX_CONN = 2;
 
 void chatFun(int connection){    
     MessageType msgType;
-    read(connection, (void *)&msgType, sizeof(msgType));
+    recv(connection, (void *)&msgType, sizeof(msgType), 0);
     if (msgType != heartbeat) {
-        FileInfo file;
-        read(connection, (void *)&file, sizeof(file));
-        cout << "******************************" << endl;
-        cout << "|---------Client Msg----------" << endl;
-        cout << "Message type: " << msgType << endl;
-        cout << "Size of name: " << file.name << endl;
-        cout << "Size of file: " << file.size << endl;
-        cout << "******************************" << endl;
+        int chunkSize = 0;
+        recv(connection, (void *)&chunkSize, sizeof(chunkSize), 0);
+        std::cout << "ChunkSize: " << chunkSize << endl;
+        
+        char *buff = new char[chunkSize];
+        int r = recv(connection, (void *)buff, chunkSize, 0);
+        std::cout << "Chunk Received: " << r << std::endl;
+        std::cout << "Chunk len: " << strlen(buff) << std::endl;
+        std::cout << "******************************" << std::endl;
+        std::cout << "Chunk: " << buff << std::endl;
+        std::cout << "******************************" << std::endl;
+        delete [] buff;
     }
 
     // Close connection socket

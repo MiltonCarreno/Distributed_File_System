@@ -8,6 +8,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <vector>
+#include <thread>
 #define PORT 9090
 const char* LOCAL_HOST = "127.0.0.1";
 
@@ -89,15 +90,35 @@ void Client::sendChunks() {
     // Get file chunks
     fstream fs;
     fs.open(filePath, fstream::in | fstream::binary);
+    int chunkSize;
+    if ((fileSize % nodes.size()) == 0) {
+        chunkSize = fileSize / nodes.size();
+    } else {
+        chunkSize = (fileSize / nodes.size()) + 1;
+    }
 
     // Connect to Storage nodes one by one
     for (int node: nodes) {
         setSocket(node);
         createSocket();
         requestConnection();
-        // Send chunk
-        byte chunk;
-        send(newSocket, (void *)&chunk, sizeof(chunk), 0);
+        // Get chunk
+        char *chunk = new char[chunkSize];
+        fs.read(chunk, chunkSize);
+        std::cout << "Port: " << node << endl;
+        std::cout << "ChunkSize: " << chunkSize << endl;
+        std::cout << "Chunk Read: " << sizeof(chunk) << std::endl;
+        std::cout << chunk << std::endl;
+        // Send message type
+        MessageType msgType = store;
+        send(newSocket, (const void*)&msgType, sizeof(msgType), 0);
+        // Send chunk size then data
+        int scs = send(newSocket, (void *)&chunkSize, sizeof(chunkSize), 0);
+        int sc = send(newSocket, (void *)chunk, chunkSize, 0);
+        std::cout << "Sent scs: " << scs << endl;
+        std::cout << "Sent sc: " << sc << endl;
+
+        delete[] chunk;
         closeConnection();
     }
 

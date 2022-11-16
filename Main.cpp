@@ -12,7 +12,7 @@ using namespace std;
 // Number of connection requests waiting to be accepted
 const int MAX_CONN_REQS = 1;
 // Number of total connections to be accepted
-const int MAX_CONN = 3;
+const int MAX_CONN = 4;
 
 void chatFun(Controller *serv, int connection) {
     MessageType msgType;

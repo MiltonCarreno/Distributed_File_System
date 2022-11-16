@@ -7,8 +7,9 @@ struct FileInfo {
     int size = 0;
 };
 // Struct containing chunk of data
-struct Chunk {
-
+struct ChunkInfo {
+    std::string name = "";
+    int size = 0;
 };
 // Struct containing storage node info to be used to send chunks to 
 struct StorageNodeInfo {
