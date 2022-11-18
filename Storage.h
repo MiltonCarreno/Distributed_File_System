@@ -5,14 +5,17 @@
 
 class Storage {
     private:
-        int port, space; // Space currently available to storage node
+        // Storage path
+        std::string path;
+        // Port and space currently available
+        int port, space;
         // heartbeat and store/query sockets
         int hbSocket, sqSocket, hbLen, sqLen, opt;
         // heartbeat and store/query address
         struct sockaddr_in hbAddress, sqAddress;
 
     public:
-        Storage(int);
+        Storage(int, std::string);
         void createSocket();
         void requestConnection();
         void closeConnection();

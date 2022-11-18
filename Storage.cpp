@@ -12,10 +12,11 @@
 #define PORT_TWO 9090
 const char* LOCAL_HOST = "127.0.0.1";
 
-Storage::Storage(int storagePort) {
-    // Set port and amount space for storage node (2 MB)
+Storage::Storage(int storagePort, std::string storagePath) {
+    // Set port, space (2 MB) and path for storage node
     port = storagePort;
     space = 2000000;
+    path = storagePath;
     // Set heartbeat socket
     hbAddress.sin_family = AF_INET;
     hbAddress.sin_port = htons(PORT_ONE);

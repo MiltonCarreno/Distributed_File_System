@@ -20,6 +20,7 @@ class Client {
         void closeConnection();
         void sendFileInfo();
         void getStorageNodes();
+        string parseFilePath(int);
         void sendChunks();
 };
 #endif
