@@ -2,9 +2,12 @@
 #define STORAGE_H
 #include <netinet/in.h>
 #include <string>
+#include <vector>
 
 class Storage {
     private:
+        // Record of stored file names
+        std::vector<std::string> inventory;
         // Storage path
         std::string path;
         // Port and space currently available
@@ -23,5 +26,6 @@ class Storage {
         void listenConnection(int);
         int acceptConnection();
         void sendBeat();
+        void saveFile(char*, std::string, int);
 };
 #endif

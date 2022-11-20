@@ -111,3 +111,13 @@ void Storage::sendBeat() {
     send(hbSocket, (const void*)&msgType, sizeof(msgType), 0);
     send(hbSocket, (const void*)&hb, sizeof(hb), 0);
 }
+
+void Storage::saveFile(char *chunk, std::string chunkName, int chunkSize) {
+    std::fstream fs(path + "/" + chunkName, std::fstream::out | std::fstream::binary);
+    fs.write(chunk, chunkSize);
+    fs.close();
+    inventory.push_back(chunkName);
+
+    for (auto i : inventory) std::cout << "[" << i << "]";
+    std::cout << std::endl;
+}

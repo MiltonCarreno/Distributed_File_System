@@ -12,7 +12,7 @@ const int MAX_CONN_REQS = 1;
 // Number of total connections to be accepted
 const int MAX_CONN = 2;
 
-void chatFun(int connection, std::string path){    
+void chatFun(Storage *s, int connection, std::string path){    
     MessageType msgType;
     recv(connection, (void *)&msgType, sizeof(msgType), 0);
     if (msgType != heartbeat) {
@@ -30,11 +30,7 @@ void chatFun(int connection, std::string path){
         std::cout << "Chunk: " << buff << std::endl;
         std::cout << "******************************" << std::endl;
 
-        string chunkPath = path + "/" + chunkInfo.name;
-
-        fstream fs(chunkPath, fstream::out | fstream::binary);
-        fs.write(buff, chunkInfo.size);
-        fs.close();
+        s->saveFile(buff, chunkInfo.name, chunkInfo.size);
         delete [] buff;
     }
 
@@ -61,7 +57,7 @@ int main(int agrc, char *argv[]) {
         int conn = storage.acceptConnection();
 
         // Delegate chatting/connections to individual threads
-        threads.emplace_back(thread(chatFun, conn, argv[2]));
+        threads.emplace_back(thread(chatFun, &storage, conn, argv[2]));
     }
 
     // Wait for all the threads to finish
