@@ -10,9 +10,9 @@
 using namespace std;
 
 // Number of connection requests waiting to be accepted
-const int MAX_CONN_REQS = 1;
+const int MAX_NUM_CONN_REQS = 10;
 // Number of total connections to be accepted
-const int MAX_CONN = 4;
+const int MAX_NUM_CONN = 12;
 
 void chatFun(Controller *serv, int connection) {
     MessageType msgType;
@@ -51,6 +51,15 @@ void chatFun(Controller *serv, int connection) {
         cout << "Size of file: " << beat.port << endl;
         cout << "******************************" << endl;
         serv->addStorageNode(beat.port, beat.space);
+        // int invSize;
+        // read(connection, (void *)&invSize, sizeof(invSize));
+        // std::vector<std::string> inv(invSize);
+        // read(connection, (void *)&inv, sizeof(inv));
+        // cout << "Inv:" << endl;
+        // for (string s: inv) {
+        //     cout << s << endl;
+        // }
+        // cout << "End of Inv!" << endl;
     }
 
     // Close connection socket
@@ -67,9 +76,9 @@ int main(int argc, char *argv[]) {
 
     // Accept connection request and create new connection socket
     vector<thread> threads;
-    for (int i = 0; i<MAX_CONN; i++) {
+    for (int i = 0; i<MAX_NUM_CONN; i++) {
         printf("In while loop!");
-        server.listenConnection(MAX_CONN_REQS);
+        server.listenConnection(MAX_NUM_CONN_REQS);
         int conn = server.acceptConnection();
 
         // Delegate chatting/connections to individual threads

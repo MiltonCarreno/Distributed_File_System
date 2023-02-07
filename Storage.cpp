@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <chrono>         // std::chrono::seconds
+#include <thread>
 #define PORT_ONE 8080
 #define PORT_TWO 9090
 const char* LOCAL_HOST = "127.0.0.1";
@@ -37,11 +39,6 @@ Storage::Storage(int storagePort, std::string storagePath) {
 }
 
 void Storage::createSocket() {
-    // Creating heartbeat socket
-    if ((hbSocket = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-        perror("HeartBeat Socket Failed");
-        exit(EXIT_FAILURE);
-    }
     // Creating store/query socket
     if ((sqSocket = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
         perror("Store/Query Socket Failed");
@@ -55,7 +52,16 @@ void Storage::createSocket() {
     printf("\nCreated Sockets\n");
 }
 
-void Storage::requestConnection() {
+void Storage::createHeartBeatSocket() {
+    // Creating heartbeat socket
+    if ((hbSocket = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+        perror("HeartBeat Socket Failed");
+        exit(EXIT_FAILURE);
+    }
+    printf("\nCreated Heartbeat Socket\n");
+}
+
+void Storage::requestHeartBeatConnection() {
     int connection = connect(hbSocket, 
     (struct sockaddr*)&hbAddress, (socklen_t)hbLen);
     if (connection < 0) {
@@ -63,6 +69,13 @@ void Storage::requestConnection() {
         exit(EXIT_FAILURE);
     }
     printf("\nConnection Request Accepted\n");
+}
+
+void Storage::closeHeartBeatSocket() {
+    int connection = close(hbSocket);
+    if (connection < 0) {
+        exit(EXIT_FAILURE);
+    }
 }
 
 void Storage::closeConnection() {
@@ -105,19 +118,46 @@ int Storage::acceptConnection() {
     return connection;
 }
 
+void Storage::printInventory() {
+    const std::lock_guard<std::mutex> lock(invMutex);
+    if (inventory.size() > 0) {
+        std::cout << "INVENTORY: ";
+        for (auto i : inventory) std::cout << "[" << i << "]";
+    } else {
+        std::cout << "--EMPTY INVENTORY--";
+    }
+    std::cout << std::endl;
+}
+
+void Storage::addChunkToInventory(std::string fileName) {
+    const std::lock_guard<std::mutex> lock(invMutex);
+    inventory.push_back(fileName);
+}
+
 void Storage::sendBeat() {
     Heartbeat hb = {"This/is/a/path", port, space};
     MessageType msgType = heartbeat;
     send(hbSocket, (const void*)&msgType, sizeof(msgType), 0);
     send(hbSocket, (const void*)&hb, sizeof(hb), 0);
+
+    std::cout << "\n******BEAT Inventory******" << std::endl;
+    printInventory();
+    std::cout << "^^^^^^BEAT Inventory^^^^^^\n" << std::endl;
+
+    // int invSize = inventory.size();
+    // std::cout << "Size:" << invSize << std::endl;
+    // int a = send(hbSocket, (const void*)&invSize, sizeof(invSize), 0);
+    // std::cout << "HB Size: " << a << std::endl;
+    // std::vector<std::string> inv(inventory.begin(), inventory.end());
+    // int b = send(hbSocket, (const void*)&inv, sizeof(inv), 0);
+    // std::cout << "HB: " << b << std::endl;
 }
 
-void Storage::saveFile(char *chunk, std::string chunkName, int chunkSize) {
+void Storage::saveChunk(char *chunk, std::string chunkName, int chunkSize) {
     std::fstream fs(path + "/" + chunkName, std::fstream::out | std::fstream::binary);
     fs.write(chunk, chunkSize);
     fs.close();
-    inventory.push_back(chunkName);
 
-    for (auto i : inventory) std::cout << "[" << i << "]";
-    std::cout << std::endl;
+    addChunkToInventory(chunkName);
+    printInventory();
 }

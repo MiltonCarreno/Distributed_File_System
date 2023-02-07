@@ -8,9 +8,11 @@
 using namespace std;
 
 // Number of connection requests waiting to be accepted
-const int MAX_CONN_REQS = 1;
+const int MAX_NUM_CONN_REQS = 2;
 // Number of total connections to be accepted
-const int MAX_CONN = 2;
+const int MAX_NUM_CONN = 8;
+// Number of heartbeats to send to controller
+const int NUM_BEATS = 5;
 
 void chatFun(Storage *s, int connection, std::string path){    
     MessageType msgType;
@@ -30,7 +32,7 @@ void chatFun(Storage *s, int connection, std::string path){
         std::cout << "Chunk: " << buff << std::endl;
         std::cout << "******************************" << std::endl;
 
-        s->saveFile(buff, chunkInfo.name, chunkInfo.size);
+        s->saveChunk(buff, chunkInfo.name, chunkInfo.size);
         delete [] buff;
     }
 
@@ -38,33 +40,44 @@ void chatFun(Storage *s, int connection, std::string path){
     close(connection);
 }
 
+void stayAlive(Storage* s) {
+    for (int i = 0; i<NUM_BEATS; i++) {
+        // Create heartbeat connection with controller node 
+        s->createHeartBeatSocket();
+        // Request connection with controller node
+        s->requestHeartBeatConnection();
+        // Send heartbeat: chunk names and storage space
+        s->sendBeat();
+        // Close heartbeat socket
+        s->closeHeartBeatSocket();
+        // Wait 5 seconds before sending next heartbeat
+        std::this_thread::sleep_for (std::chrono::seconds(5));
+    }
+}
+
 int main(int agrc, char *argv[]) {
     // Create new storage node
     Storage storage(atoi(argv[1]), argv[2]);
     // Create new sockets
     storage.createSocket();
-    // Request connection with controller node
-    storage.requestConnection();
     // Bind store/query socket
     storage.bindSocket();
     // Delegate heartbeat
     vector<thread> threads;
-    threads.emplace_back(thread(&Storage::sendBeat, &storage));
+    threads.emplace_back(thread(stayAlive, &storage));
     // Accept connection request and create new connection socket
-    for (int i = 0; i<MAX_CONN; i++) {
+    for (int i = 0; i<MAX_NUM_CONN; i++) {
         printf("In while loop!");
-        storage.listenConnection(MAX_CONN_REQS);
+        storage.listenConnection(MAX_NUM_CONN_REQS);
         int conn = storage.acceptConnection();
 
         // Delegate chatting/connections to individual threads
         threads.emplace_back(thread(chatFun, &storage, conn, argv[2]));
     }
-
     // Wait for all the threads to finish
     for (int i = 0; i<threads.size(); i++) {
         threads[i].join();
     }
-
     // Close connection
     storage.closeConnection();
     return 0;
