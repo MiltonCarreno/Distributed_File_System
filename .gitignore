@@ -1,9 +1,0 @@
-# Ignore Mac system files
-.DS_store
-
-# Ignore exe files
-data
-.vscode
-
-# Ignore this file
-.gitignore
