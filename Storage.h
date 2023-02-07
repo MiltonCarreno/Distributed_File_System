@@ -31,7 +31,7 @@ class Storage {
         void closeHeartBeatSocket();
         void sendBeat();
         void addChunkToInventory(std::string);
-        void saveChunk(char*, std::string, int);
+        void saveChunkFile(char*, std::string, int);
         void printInventory();
 };
 #endif

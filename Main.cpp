@@ -12,7 +12,7 @@ using namespace std;
 // Number of connection requests waiting to be accepted
 const int MAX_NUM_CONN_REQS = 10;
 // Number of total connections to be accepted
-const int MAX_NUM_CONN = 12;
+const int MAX_NUM_CONN = 13;
 
 void chatFun(Controller *serv, int connection) {
     MessageType msgType;
@@ -20,15 +20,15 @@ void chatFun(Controller *serv, int connection) {
     if (msgType != heartbeat) {
         FileInfo file;
         read(connection, (void *)&file, sizeof(file));
-        cout << "******************************" << endl;
-        cout << "|---------Client Msg----------" << endl;
+        cout << "\n******************************" << endl;
+        cout << "----------Client Msg----------" << endl;
         cout << "Message type: " << msgType << endl;
         cout << "Size of name: " << file.name << endl;
         cout << "Size of file: " << file.size << endl;
         cout << "******************************" << endl;
         // Get storage nodes with free space
         std::vector<int> nodes = serv->getFreeStorageNodes(file.size);
-        cout << "\n-------------Nodes--------------" << endl;
+        cout << "\n-------------Nodes------------" << endl;
         for (const auto& n : nodes) {
             std::cout << n << "; ";
         }
@@ -44,8 +44,8 @@ void chatFun(Controller *serv, int connection) {
     } else {
         Heartbeat beat;
         read(connection, (void *)&beat, sizeof(beat));
-        cout << "******************************" << endl;
-        cout << "|---------Storage Msg---------" << endl;
+        cout << "\n******************************" << endl;
+        cout << "----------Storage Msg---------" << endl;
         cout << "Message type: " << msgType << endl;
         cout << "Size of name: " << beat.data << endl;
         cout << "Size of file: " << beat.port << endl;
@@ -61,7 +61,6 @@ void chatFun(Controller *serv, int connection) {
         // }
         // cout << "End of Inv!" << endl;
     }
-
     // Close connection socket
     close(connection);
 }
@@ -69,27 +68,21 @@ void chatFun(Controller *serv, int connection) {
 int main(int argc, char *argv[]) {
     // Create Controller
     Controller server;
-
     // Create and bind new listening socket
     server.createSocket();
     server.bindSocket();
-
     // Accept connection request and create new connection socket
     vector<thread> threads;
     for (int i = 0; i<MAX_NUM_CONN; i++) {
-        printf("In while loop!");
         server.listenConnection(MAX_NUM_CONN_REQS);
         int conn = server.acceptConnection();
-
         // Delegate chatting/connections to individual threads
         threads.emplace_back(thread(chatFun, &server, conn));
     }
-
     // Wait for all the threads to finish
     for (int i = 0; i<threads.size(); i++) {
         threads[i].join();
     }
-  
     // Close listening socket
     server.shutdownSocket();
     return 0;

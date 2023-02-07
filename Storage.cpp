@@ -58,7 +58,7 @@ void Storage::createHeartBeatSocket() {
         perror("HeartBeat Socket Failed");
         exit(EXIT_FAILURE);
     }
-    printf("\nCreated Heartbeat Socket\n");
+    printf("Created Heartbeat Socket\n");
 }
 
 void Storage::requestHeartBeatConnection() {
@@ -68,7 +68,7 @@ void Storage::requestHeartBeatConnection() {
         perror("Connection request error");
         exit(EXIT_FAILURE);
     }
-    printf("\nConnection Request Accepted\n");
+    printf("\nHeartBeat Connection Accepted\n");
 }
 
 void Storage::closeHeartBeatSocket() {
@@ -76,6 +76,7 @@ void Storage::closeHeartBeatSocket() {
     if (connection < 0) {
         exit(EXIT_FAILURE);
     }
+    printf("\nHeartbeat Socket Closed\n");
 }
 
 void Storage::closeConnection() {
@@ -140,9 +141,9 @@ void Storage::sendBeat() {
     send(hbSocket, (const void*)&msgType, sizeof(msgType), 0);
     send(hbSocket, (const void*)&hb, sizeof(hb), 0);
 
-    std::cout << "\n******BEAT Inventory******" << std::endl;
+    std::cout << "\n********HEARTBEAT********" << std::endl;
     printInventory();
-    std::cout << "^^^^^^BEAT Inventory^^^^^^\n" << std::endl;
+    std::cout << "^^^^^^^^Inventory^^^^^^^^\n" << std::endl;
 
     // int invSize = inventory.size();
     // std::cout << "Size:" << invSize << std::endl;
@@ -153,11 +154,13 @@ void Storage::sendBeat() {
     // std::cout << "HB: " << b << std::endl;
 }
 
-void Storage::saveChunk(char *chunk, std::string chunkName, int chunkSize) {
+void Storage::saveChunkFile(char *chunk, std::string chunkName, int chunkSize) {
     std::fstream fs(path + "/" + chunkName, std::fstream::out | std::fstream::binary);
     fs.write(chunk, chunkSize);
     fs.close();
 
     addChunkToInventory(chunkName);
+    std::cout << "\n********ADD-CHUNK********" << std::endl;
     printInventory();
+    std::cout << "^^^^^^^^Inventory^^^^^^^^\n" << std::endl;
 }

@@ -4,3 +4,6 @@
 # Ignore exe files
 data
 .vscode
+
+# Ignore this file
+.gitignore
