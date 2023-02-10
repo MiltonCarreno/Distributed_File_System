@@ -145,13 +145,12 @@ void Storage::sendBeat() {
     printInventory();
     std::cout << "^^^^^^^^Inventory^^^^^^^^\n" << std::endl;
 
-    // int invSize = inventory.size();
-    // std::cout << "Size:" << invSize << std::endl;
-    // int a = send(hbSocket, (const void*)&invSize, sizeof(invSize), 0);
-    // std::cout << "HB Size: " << a << std::endl;
-    // std::vector<std::string> inv(inventory.begin(), inventory.end());
-    // int b = send(hbSocket, (const void*)&inv, sizeof(inv), 0);
-    // std::cout << "HB: " << b << std::endl;
+    int invSize = inventory.size();
+    std::cout << "Size:" << invSize << std::endl;
+    send(hbSocket, (const void*)&invSize, sizeof(invSize), 0);
+    for (auto i: inventory) {
+        send(hbSocket, (const void*)&i, sizeof(i), 0);
+    }
 }
 
 void Storage::saveChunkFile(char *chunk, std::string chunkName, int chunkSize) {

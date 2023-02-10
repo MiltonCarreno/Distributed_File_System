@@ -1,6 +1,8 @@
 #include <string>
 // Enum to specify the type of message
 enum MessageType {store, query, heartbeat};
+// Array of enum value to corresponding enum string
+std::string enumStrings[] {"Store", "Query", "Heartbeat"};
 // Struct containing file info
 struct FileInfo {
     std::string name = "";

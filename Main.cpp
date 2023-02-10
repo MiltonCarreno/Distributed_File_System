@@ -22,8 +22,8 @@ void chatFun(Controller *serv, int connection) {
         read(connection, (void *)&file, sizeof(file));
         cout << "\n******************************" << endl;
         cout << "----------Client Msg----------" << endl;
-        cout << "Message type: " << msgType << endl;
-        cout << "Size of name: " << file.name << endl;
+        cout << "Message type: " << enumStrings[msgType] << endl;
+        cout << "Name of file: " << file.name << endl;
         cout << "Size of file: " << file.size << endl;
         cout << "******************************" << endl;
         // Get storage nodes with free space
@@ -46,20 +46,23 @@ void chatFun(Controller *serv, int connection) {
         read(connection, (void *)&beat, sizeof(beat));
         cout << "\n******************************" << endl;
         cout << "----------Storage Msg---------" << endl;
-        cout << "Message type: " << msgType << endl;
-        cout << "Size of name: " << beat.data << endl;
-        cout << "Size of file: " << beat.port << endl;
+        cout << "Message type: " << enumStrings[msgType] << endl;
+        cout << "Storage path: " << beat.data << endl;
+        cout << "Storage size: " << beat.port << endl;
         cout << "******************************" << endl;
         serv->addStorageNode(beat.port, beat.space);
-        // int invSize;
-        // read(connection, (void *)&invSize, sizeof(invSize));
-        // std::vector<std::string> inv(invSize);
-        // read(connection, (void *)&inv, sizeof(inv));
-        // cout << "Inv:" << endl;
-        // for (string s: inv) {
-        //     cout << s << endl;
-        // }
-        // cout << "End of Inv!" << endl;
+        // Get inventory from storage node
+        int invSize;
+        read(connection, (void *)&invSize, sizeof(invSize));
+        std::vector<std::string> inv;
+        cout << "Inv:" << endl;
+        for (int i = 0; i < invSize; i++) {
+            std::string chunkName;
+            read(connection, (void *)&chunkName, sizeof(chunkName));
+            inv.push_back(chunkName);
+            cout << chunkName << endl;
+        }
+        cout << "End of Inv!" << endl;
     }
     // Close connection socket
     close(connection);
