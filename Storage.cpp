@@ -1,5 +1,5 @@
 #include "Storage.h"
-#include "Message.cpp"
+#include "Message.h"
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <fstream>
@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <chrono>         // std::chrono::seconds
+#include <chrono>
 #include <thread>
 #define PORT_ONE 8080
 #define PORT_TWO 9090

@@ -1,5 +1,5 @@
 #include "Storage.h"
-#include "Message.cpp"
+#include "Message.h"
 #include <vector>
 #include <thread>
 #include <iostream>

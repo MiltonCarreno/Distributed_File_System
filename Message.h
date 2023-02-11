@@ -1,8 +1,12 @@
+#ifndef MESSAGE_H
+#define MESSAGE_H
+
 #include <string>
 // Enum to specify the type of message
 enum MessageType {store, query, heartbeat};
 // Array of enum value to corresponding enum string
-std::string enumStrings[] {"Store", "Query", "Heartbeat"};
+// "const" provides internal linkage so that Main3.o & Storage.o can be linked
+const std::string enumStrings[] {"Store", "Query", "Heartbeat"};
 // Struct containing file info
 struct FileInfo {
     std::string name = "";
@@ -29,3 +33,4 @@ struct Message {
     MessageType msgType;
     void *content;
 };
+#endif

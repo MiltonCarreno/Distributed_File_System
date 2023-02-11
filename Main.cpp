@@ -1,5 +1,5 @@
 #include "Controller.h"
-#include "Message.cpp"
+#include "Message.h"
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>

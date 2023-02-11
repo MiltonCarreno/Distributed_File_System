@@ -1,5 +1,5 @@
 #include "Client.h"
-#include "Message.cpp"
+#include "Message.h"
 #include <arpa/inet.h>
 #include <stdio.h>
 #include <stdlib.h>
