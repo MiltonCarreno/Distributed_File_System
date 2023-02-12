@@ -22,5 +22,6 @@ class Controller {
         void shutdownSocket();
         void addStorageNode(int, int);
         std::vector<int>getFreeStorageNodes(int);
+        void getHash(unsigned char*);
 };
 #endif

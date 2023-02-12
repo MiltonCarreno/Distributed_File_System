@@ -6,6 +6,8 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <iostream>
+#include <iomanip>
+#include <openssl/sha.h>
 #define PORT 8080
 
 Controller::Controller() {
@@ -81,4 +83,20 @@ std::vector<int> Controller::getFreeStorageNodes(int fileSize) {
         availableNodes.push_back(key);
     }
     return availableNodes;
+}
+
+void Controller::getHash(unsigned char *s) {
+    unsigned char obuf[32];
+
+    SHA256(s, strlen((const char *)s), obuf);
+
+    std::cout << std::hex // hex
+         << std::internal // fill the number
+         << std::setfill('0'); // fill with 0s
+    
+    for (int i = 0; i<32; i++) {
+        int x = obuf[i];
+        std::cout << std::setw(2) << x;
+    }
+    std::cout << std::dec << std::endl;
 }

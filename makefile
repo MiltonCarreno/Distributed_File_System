@@ -3,14 +3,17 @@
 # LDLIBS = Linking libraries
 # CXXFLAGS = Compiler flags
 # CXX = Compiler
+VAR = openssl
+CXXFLAGS = -std=c++17 -g $(shell pkg-config --cflags $(VAR))
+LDLIBS = $(shell pkg-config --libs $(VAR))
 CXX = g++
 all: dfs client storage		# Targets to run
 dfs: Main.o Controller.o	# Controller Node
-	$(CXX) -o dfs Main.o Controller.o
+	$(CXX) $(LDLIBS) -o dfs Main.o Controller.o
 Main.o: Main.cpp
 	$(CXX) -std=c++17 -c Main.cpp
 Controller.o: Controller.cpp
-	$(CXX) -std=c++17 -c Controller.cpp
+	$(CXX) $(CXXFLAGS) -c Controller.cpp
 client: Main2.o Client.o	# Client Node
 	$(CXX) -o client Main2.o Client.o
 Main2.o: Main2.cpp

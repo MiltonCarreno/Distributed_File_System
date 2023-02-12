@@ -63,6 +63,8 @@ void chatFun(Controller *serv, int connection) {
             cout << chunkName << endl;
         }
         cout << "End of Inv!" << endl;
+        unsigned char ibuf[] = "You got this!";
+        serv->getHash(ibuf);
     }
     // Close connection socket
     close(connection);
