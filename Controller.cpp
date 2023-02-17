@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <iostream>
 #include <iomanip>
-#include <openssl/sha.h>
+// #include <openssl/sha.h>
 #define PORT 8080
 
 Controller::Controller() {
@@ -70,33 +70,72 @@ void Controller::shutdownSocket() {
 void Controller::addStorageNode(int nodePort, int nodeSpace) {
     const std::lock_guard<std::mutex> lock(mapMutex);
     map[nodePort] = nodeSpace;
+    aliveNodes[nodePort] = duration_cast<milliseconds>(
+        system_clock::now().time_since_epoch()).count();
+
     for (const auto& [key, val] : map) {
-        std::cout << '[' << key << "] = " << val << "; ";
+        std::cout << '[' << key << "] = " << val;
+        if (aliveNodes[key] != -1) {
+            std::cout << " T: " << aliveNodes[key] << "; ";
+        } else {
+            std::cout << " T: DEAD; ";
+        }
     }
     std::cout << '\n';
+}
+
+void Controller::checkStorageNodes() {
+    // Forever do:
+    // get lock
+    // check all nodes in map
+    // if last beat is >15 seconds, then its death
+    // else its alive
+    // release lock
+    // wait 15 seconds
+    // do again
+    while (true) {
+        {
+            const std::lock_guard<std::mutex> lock(mapMutex);
+            std::cout << "\n@@@@@@@@@@@@@@@@@@@@@@@\n";
+            for (auto [node, ms]: aliveNodes) {
+                int t_now = (duration_cast<milliseconds>(
+                    system_clock::now().time_since_epoch()).count());
+                if ((t_now - ms) > 10000) aliveNodes[node] = -1;
+
+                std::cout << '[' << node << "] <=> ";
+                if (aliveNodes[node] != -1) {
+                    std::cout << " T: " << aliveNodes[node] << "; ";
+                } else {
+                    std::cout << " T: DEAD; ";
+                }
+            }
+            std::cout << "\n@@@@@@@@@@@@@@@@@@@@@@@\n";
+        }
+        std::this_thread::sleep_for(milliseconds(15000));
+    };
 }
 
 std::vector<int> Controller::getFreeStorageNodes(int fileSize) {
     const std::lock_guard<std::mutex> lock(mapMutex);
     std::vector<int> availableNodes;
     for (const auto& [key, val]: map) {
-        availableNodes.push_back(key);
+        if (aliveNodes[key] != -1) availableNodes.push_back(key);
     }
     return availableNodes;
 }
 
 void Controller::getHash(unsigned char *s) {
-    unsigned char obuf[32];
+    // unsigned char obuf[32];
 
-    SHA256(s, strlen((const char *)s), obuf);
+    // SHA256(s, strlen((const char *)s), obuf);
 
-    std::cout << std::hex // hex
-         << std::internal // fill the number
-         << std::setfill('0'); // fill with 0s
+    // std::cout << std::hex // hex
+    //      << std::internal // fill the number
+    //      << std::setfill('0'); // fill with 0s
     
-    for (int i = 0; i<32; i++) {
-        int x = obuf[i];
-        std::cout << std::setw(2) << x;
-    }
-    std::cout << std::dec << std::endl;
+    // for (int i = 0; i<32; i++) {
+    //     int x = obuf[i];
+    //     std::cout << std::setw(2) << x;
+    // }
+    // std::cout << std::dec << std::endl;
 }
