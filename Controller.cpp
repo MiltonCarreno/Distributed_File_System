@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <iostream>
 #include <iomanip>
-// #include <openssl/sha.h>
+#include <openssl/sha.h>
 #define PORT 8080
 
 Controller::Controller() {
@@ -85,14 +85,6 @@ void Controller::addStorageNode(int nodePort, int nodeSpace) {
 }
 
 void Controller::checkStorageNodes() {
-    // Forever do:
-    // get lock
-    // check all nodes in map
-    // if last beat is >15 seconds, then its death
-    // else its alive
-    // release lock
-    // wait 15 seconds
-    // do again
     while (true) {
         {
             const std::lock_guard<std::mutex> lock(mapMutex);
@@ -125,17 +117,17 @@ std::vector<int> Controller::getFreeStorageNodes(int fileSize) {
 }
 
 void Controller::getHash(unsigned char *s) {
-    // unsigned char obuf[32];
+    unsigned char obuf[32];
 
-    // SHA256(s, strlen((const char *)s), obuf);
+    SHA256(s, strlen((const char *)s), obuf);
 
-    // std::cout << std::hex // hex
-    //      << std::internal // fill the number
-    //      << std::setfill('0'); // fill with 0s
+    std::cout << std::hex // hex
+         << std::internal // fill the number
+         << std::setfill('0'); // fill with 0s
     
-    // for (int i = 0; i<32; i++) {
-    //     int x = obuf[i];
-    //     std::cout << std::setw(2) << x;
-    // }
-    // std::cout << std::dec << std::endl;
+    for (int i = 0; i<32; i++) {
+        int x = obuf[i];
+        std::cout << std::setw(2) << x;
+    }
+    std::cout << std::dec << std::endl;
 }
