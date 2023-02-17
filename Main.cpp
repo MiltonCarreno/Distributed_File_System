@@ -63,8 +63,8 @@ void chatFun(Controller *serv, int connection) {
             cout << chunkName << endl;
         }
         cout << "End of Inv!" << endl;
-        unsigned char ibuf[] = "You got this!";
-        serv->getHash(ibuf);
+        // unsigned char ibuf[] = "You got this!";
+        // serv->getHash(ibuf);
     }
     // Close connection socket
     close(connection);
@@ -78,6 +78,7 @@ int main(int argc, char *argv[]) {
     server.bindSocket();
     // Accept connection request and create new connection socket
     vector<thread> threads;
+    threads.emplace_back(thread(&Controller::checkStorageNodes, &server));
     for (int i = 0; i<MAX_NUM_CONN; i++) {
         server.listenConnection(MAX_NUM_CONN_REQS);
         int conn = server.acceptConnection();
