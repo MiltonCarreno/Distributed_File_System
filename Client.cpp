@@ -13,6 +13,13 @@
 #define PORT 9090
 const char* LOCAL_HOST = "127.0.0.1";
 
+/**
+ * @brief Constructs a new Client object. 
+ * Connects to Controller at given port and stores file.
+ * 
+ * @param port Port to which to connect with Controller
+ * @param file File to be sent to Controller for storage
+ */
 Client::Client(int port, string file) {
     // Set file info
     fstream fs;
@@ -30,6 +37,11 @@ Client::Client(int port, string file) {
     printf("\nThis is the constructor\n");
 }
 
+/**
+ * @brief Sets socket information
+ * 
+ * @param port Port to connect to
+ */
 void Client::setSocket(int port) {
     // Set socket info
     address.sin_family = AF_INET;
@@ -41,6 +53,10 @@ void Client::setSocket(int port) {
     }
 }
 
+/**
+ * @brief Creates new socket for Client
+ * 
+ */
 void Client::createSocket() {
     // Creating socket file descriptor
     if ((newSocket = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
@@ -50,6 +66,10 @@ void Client::createSocket() {
     printf("\nCreated Socket\n");
 }
 
+/**
+ * @brief Uses Client socket to request connection
+ * 
+ */
 void Client::requestConnection() {
     int connection = connect(newSocket, 
     (struct sockaddr*)&address, (socklen_t)addressLen);
@@ -60,6 +80,10 @@ void Client::requestConnection() {
     printf("\nConnection Request Accepted\n");
 }
 
+/**
+ * @brief Closes the Client socket connection
+ * 
+ */
 void Client::closeConnection() {
     int connection = close(newSocket);
     if (connection < 0) {
@@ -67,6 +91,10 @@ void Client::closeConnection() {
     }
 }
 
+/**
+ * @brief Sends file info (path, size) to the controller
+ * 
+ */
 void Client::sendFileInfo() {
     // Send file info to Controller
     MessageType msgType = store;
@@ -75,6 +103,10 @@ void Client::sendFileInfo() {
     send(newSocket, (const void*)&msg, sizeof(msg), 0);
 }
 
+/**
+ * @brief Obtain available nodes from Controller.
+ * 
+ */
 void Client::getStorageNodes() {
     // Get number of available storage nodes from Controller
     int numNodes = 0;
@@ -87,6 +119,13 @@ void Client::getStorageNodes() {
     }
 }
 
+/**
+ * @brief Parses file path to create chunk name.
+ * 'num' is appended to the file name to create the chunk name.
+ * 
+ * @param num Number to append to file name, indicating chunk number
+ * @return string Chunk name
+ */
 string Client::parseFilePath(int num) {
     smatch m1, m2;
     std::regex e1("[^/]+\\w+$"), e2("\\.");
@@ -100,6 +139,10 @@ string Client::parseFilePath(int num) {
     return chunkName;
 }
 
+/**
+ * @brief Creates and sends chunks to their respective Storage nodes.
+ * 
+ */
 void Client::sendChunks() {
     // Get file chunks
     fstream fs;
