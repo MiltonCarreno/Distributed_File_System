@@ -45,7 +45,7 @@ void chatFun(Controller *serv, int connection) {
         Heartbeat beat;
         read(connection, (void *)&beat, sizeof(beat));
         cout << "\n******************************" << endl;
-        cout << "----------Storage Msg---------" << endl;
+        cout << "-----------Heartbeat-----------" << endl;
         cout << "Message type: " << enumStrings[msgType] << endl;
         cout << "Storage path: " << beat.data << endl;
         cout << "Storage size: " << beat.port << endl;
@@ -70,6 +70,13 @@ void chatFun(Controller *serv, int connection) {
     close(connection);
 }
 
+/**
+ * @brief Main function that initiallizes a Controller object
+ * 
+ * @param argc No arguments
+ * @param argv No arguments
+ * @return int 
+ */
 int main(int argc, char *argv[]) {
     // Create Controller
     Controller server;

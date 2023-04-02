@@ -6,15 +6,17 @@
 #include <thread>
 #include <map>
 #include <vector>
+#include <string>
 
 using namespace std::chrono;
+
+enum NodeState {dead, alive};
 
 class Controller {
     private:
         std::mutex mapMutex; // Mutex to lock access to map
-        std::map<int,int> map; // Map to record storage node port and space
-        // Map for storage node port and node state (i.e. alive or death)
-        std::map<int, int> aliveNodes;
+        // Records storage node info (i.e. port, space, state)
+        std::map<int, std::map<std::string, int>> nodes;
         int newSocket, addressLen, opt;
         struct sockaddr_in address;
 
