@@ -7,6 +7,8 @@
 #include <unistd.h>
 #include <iostream>
 #include <iomanip>
+#include <math.h>
+#include <cstddef>
 #include <openssl/sha.h>
 #define PORT 8080
 
@@ -149,7 +151,7 @@ void Controller::checkStorageNodes() {
             std::cout << "@@@@@@@@@@@@@@@@@@@@@@@\n";
         }
         // Wait for 15 seconds before checking nodes again
-        std::this_thread::sleep_for(milliseconds(15000));
+        std::this_thread::sleep_for(milliseconds(10000));
     };
 }
 
@@ -174,23 +176,68 @@ std::vector<int> Controller::getFreeStorageNodes(int fileSize) {
     return availableNodes;
 }
 
+std::ostream& operator<< (std::ostream& os, std::byte b) {
+    return os << std::bitset<8>(std::to_integer<int>(b));
+}
+
+// TODO: Rename and calculate rand value from hash bits
 /**
  * @brief Produces the SHA256 of a given unsigned char*
  * 
  * @param s String to be hashed
  */
 void Controller::getHash(unsigned char *s) {
-    unsigned char obuf[32];
+    unsigned char buf256[32];
+    unsigned char buf384[48];
+    unsigned char buf512[64];
 
-    SHA256(s, strlen((const char *)s), obuf);
+    SHA256(s, strlen((const char *)s), buf256);
+    SHA384(s, strlen((const char *)s), buf384);
+    SHA512(s, strlen((const char *)s), buf512);
 
     std::cout << std::hex // hex
          << std::internal // fill the number
          << std::setfill('0'); // fill with 0s
     
     for (int i = 0; i<32; i++) {
-        int x = obuf[i];
+        int x = buf256[i];
         std::cout << std::setw(2) << x;
     }
+    std::cout << std::endl;
+    for (int i = 0; i<48; i++) {
+        int x = buf384[i];
+        std::cout << std::setw(2) << x;
+    }
+    std::cout << std::endl;
+    for (int i = 0; i<64; i++) {
+        int x = buf512[i];
+        std::cout << std::setw(2) << x;
+    }
+    std::cout << std::endl;
     std::cout << std::dec << std::endl;
+
+    unsigned char c[256];
+    // Iterate through 256 bits in 32 chars
+    for (int i = 0; i<32; i++) {
+        char eight_bits = buf256[i];
+        // Access each bit at indexed char
+        for (int j = 7; j>=0; j--) {
+            int idx = (i * 8) + j;
+            c[idx] = ((eight_bits & 1) ? '1' : '0'); // Get first bit in char
+            eight_bits = eight_bits >> 1; // Right shift char by 1
+        }
+    }
+
+    std::cout << "\nCC: ";
+    for (int i = 0; i<256; i++) {
+        if (i % 8 == 0 && i != 0) {
+            std::cout << " | ";
+        } else if (i % 4 == 0 && i != 0) {
+            std::cout << '-';
+        }
+        std::cout << c[i];
+    }
+    std::cout << std::endl;
+    std::byte b{0x7f};
+    std::cout << b << std::endl;
 }
