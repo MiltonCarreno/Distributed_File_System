@@ -15,11 +15,12 @@ BloomFilter::BloomFilter(int size, int numHashes) {
 }
 
 /**
- * @brief Adds an entry into the bloom filter.
+ * @brief Generates the bits assigned to 'entry'
  * 
- * @param entry Value to add
+ * @param entry Value to be added to the bloom filter
+ * @return int* Array of bits assigned to 'entry'
  */
-void BloomFilter::add(unsigned char* entry) {
+int* BloomFilter::getIndices(unsigned char* entry) {
     unsigned char buf256[32];
     unsigned char buf512[64];
 
@@ -27,26 +28,8 @@ void BloomFilter::add(unsigned char* entry) {
     SHA256(entry, strlen((const char *)entry), buf256);
     SHA512(entry, strlen((const char *)entry), buf512);
 
-    std::cout << std::hex // hex
-         << std::internal // fill the number
-         << std::setfill('0'); // fill with 0s
-    
-    for (int i = 0; i<32; i++) {
-        int x = buf256[i];
-        std::cout << std::setw(2) << x;
-    }
-    std::cout << std::endl;
-    for (int i = 0; i<64; i++) {
-        int x = buf512[i];
-        std::cout << std::setw(2) << x;
-    }
-
-    std::cout << std::endl;
-    std::cout << std::dec << std::endl;
-
-    // Compress 256 and 512 hashes into ints
-    int x = 0;
-    int y = 0;
+    // Collapse 256 and 512 hashes
+    int x = 0, y = 0;
     for (int i = 0; i<32; i++) {
         x += buf256[i] % m;
         y += buf512[i] % m;
@@ -57,14 +40,24 @@ void BloomFilter::add(unsigned char* entry) {
 
     // Execute 'Enhanced Double Hashing'
     // Reference: Bloom Filters in Probabilistic Verification
-    int hashes[k];
-    hashes[0] = x;
+    hashes[x] = 1; // Set bit on
     for (int i = 1; i<k; i++) {
         x = (x + y) % m;
         y = (i + y) % m;
-        hashes[i] = x;
+        hashes[x] = 1; // Set bit on
     }
 
+    return hashes;
+}
+
+/**
+ * @brief Adds an entry into the bloom filter.
+ * 
+ * @param entry Value to add
+ */
+void BloomFilter::add(unsigned char* entry) {
+    int hashes[k] = getIndices(entry);
+    for (auto idx: hashes) bits[idx] = 1;
 }
 
 /**
@@ -75,5 +68,12 @@ void BloomFilter::add(unsigned char* entry) {
  * @return false 
  */
 bool BloomFilter::query(unsigned char* entry) {
+    bool found = true;
+    int hashes[k] = getIndices(entry), i = 0;
 
+    while (found == true && i < k) {
+        if (!bits[hashes[i]]) found = false;
+    }
+
+    return found;
 }
