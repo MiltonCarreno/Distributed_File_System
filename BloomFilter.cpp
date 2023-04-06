@@ -12,15 +12,18 @@
 BloomFilter::BloomFilter(int size, int numHashes) {
     m = size;
     k = numHashes;
+    bits = new int[m];
 }
 
 /**
- * @brief Generates the bits assigned to 'entry'
+ * @brief Generates the bits assigned to 'entry'.
+ * Utilized 'Enhanced Double Hashing' from P. Dillinger & P. Manolios
+ * Reference: Bloom Filters in Probabilistic Verification
  * 
  * @param entry Value to be added to the bloom filter
  * @return int* Array of bits assigned to 'entry'
  */
-int* BloomFilter::getIndices(unsigned char* entry) {
+void BloomFilter::getIndices(unsigned char* entry, int* hashes) {
     unsigned char buf256[32];
     unsigned char buf512[64];
 
@@ -38,16 +41,13 @@ int* BloomFilter::getIndices(unsigned char* entry) {
     x = x % m;
     y = y % m;
 
-    // Execute 'Enhanced Double Hashing'
-    // Reference: Bloom Filters in Probabilistic Verification
-    hashes[x] = 1; // Set bit on
+    // Enhanced Double Hashing
+    hashes[0] = x;
     for (int i = 1; i<k; i++) {
         x = (x + y) % m;
         y = (i + y) % m;
-        hashes[x] = 1; // Set bit on
+        hashes[i] = x;
     }
-
-    return hashes;
 }
 
 /**
@@ -56,8 +56,10 @@ int* BloomFilter::getIndices(unsigned char* entry) {
  * @param entry Value to add
  */
 void BloomFilter::add(unsigned char* entry) {
-    int hashes[k] = getIndices(entry);
-    for (auto idx: hashes) bits[idx] = 1;
+    int* hashes = new int[k];
+    getIndices(entry, hashes);
+    for (int i = 0; i<k; i++) bits[hashes[i]] = 1;
+    delete []hashes;
 }
 
 /**
@@ -69,11 +71,36 @@ void BloomFilter::add(unsigned char* entry) {
  */
 bool BloomFilter::query(unsigned char* entry) {
     bool found = true;
-    int hashes[k] = getIndices(entry), i = 0;
+    int* hashes = new int[k];
+    getIndices(entry, hashes);
 
-    while (found == true && i < k) {
+    int i = 0;
+    while (found && i < k) {
         if (!bits[hashes[i]]) found = false;
+        i++;
     }
+    delete []hashes;
 
     return found;
+}
+
+/**
+ * @brief Prints bloom filter
+ * 
+ */
+void BloomFilter::print() {
+    for (int i = 0; i<m; i++) {
+        std::cout << std::setw(2);
+        std::cout << i << " ";
+    }
+    std::cout << std::endl;
+    for (int i = 0; i<m; i++) {
+        std::cout << std::setw(2);
+        std::cout << bits[i] << " ";
+    }
+    std::cout << std::endl;
+}
+
+BloomFilter::~BloomFilter() {
+    delete []bits;
 }
