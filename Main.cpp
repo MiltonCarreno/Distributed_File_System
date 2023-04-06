@@ -26,6 +26,8 @@ void chatFun(Controller *serv, int connection) {
         cout << "Name of file: " << file.name << endl;
         cout << "Size of file: " << file.size << endl;
         cout << "******************************" << endl;
+        // Add file to bloom filter
+        serv->getHash((unsigned char*)&file.name[0]);
         // Get storage nodes with free space
         std::vector<int> nodes = serv->getFreeStorageNodes(file.size);
         cout << "\n-------------Nodes------------" << endl;
@@ -63,8 +65,6 @@ void chatFun(Controller *serv, int connection) {
             cout << chunkName << endl;
         }
         cout << "End of Inv!" << endl;
-        unsigned char ibuf[] = "Hello World!";
-        serv->getHash(ibuf);
     }
     // Close connection socket
     close(connection);

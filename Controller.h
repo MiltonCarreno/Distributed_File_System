@@ -1,5 +1,6 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
+#include "BloomFilter.h"
 #include <netinet/in.h>
 #include <mutex>
 #include <chrono>
@@ -19,6 +20,7 @@ class Controller {
         std::map<int, std::map<std::string, int>> nodes;
         int newSocket, addressLen, opt;
         struct sockaddr_in address;
+        BloomFilter bl;
 
     public:
         Controller();

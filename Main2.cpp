@@ -8,6 +8,14 @@
 #include "Client.h"
 using namespace std;
 
+// TODO: Allow for third argument to specify Store or Query actions
+/**
+ * @brief Main function for Client
+ * 
+ * @param argc Two arguments are expected
+ * @param argv Controller Port & File Path
+ * @return int 
+ */
 int main(int argc, char *argv[]) {
     // Create new client node
     Client client(atoi(argv[1]), argv[2]);
