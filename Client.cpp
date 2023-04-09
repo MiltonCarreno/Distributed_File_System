@@ -112,11 +112,14 @@ void Client::getStorageNodes() {
     int numNodes = 0;
     read(newSocket, (void *)&numNodes, sizeof(numNodes));
     // Get one by one the storage nodes
+    cout << "\n-------------Nodes------------" << endl;
     for (int i = 0; i < numNodes; i++) {
         int node;
         read(newSocket, (void *)&node, sizeof(node));
         nodes.push_back(node);
+        std::cout << node << "; ";
     }
+    cout << "\n------------------------------\n" << endl;
 }
 
 /**
@@ -172,8 +175,8 @@ void Client::sendChunks() {
         // Send message type
         MessageType msgType = store;
         send(newSocket, (const void*)&msgType, sizeof(msgType), 0);
-        // Send ChunkInfo message (i.e. name and size of chunk)
-        ChunkInfo chunkInfo = {chunkName, chunkSize};
+        // Send FileInfo message (i.e. name and size of chunk)
+        FileInfo chunkInfo = {chunkName, chunkSize};
         int scs = send(newSocket, (void *)&chunkInfo, sizeof(chunkInfo), 0);
         // Send chunk
         int sc = send(newSocket, (void *)chunk, chunkSize, 0);

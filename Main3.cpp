@@ -21,7 +21,7 @@ void chatFun(Storage *s, int connection, std::string path){
     recv(connection, (void *)&msgType, sizeof(msgType), 0);
     if (msgType != heartbeat) {
         // Get ChunkInfo (i.e. name and size) 
-        ChunkInfo chunkInfo;
+        FileInfo chunkInfo;
         int scs = recv(connection, (void *)&chunkInfo, sizeof(chunkInfo), 0);
         // Get chunk
         char *buff = new char[chunkInfo.size];
