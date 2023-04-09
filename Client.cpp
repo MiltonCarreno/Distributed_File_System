@@ -1,5 +1,4 @@
 #include "Client.h"
-#include "Message.h"
 #include <arpa/inet.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,18 +19,25 @@ const char* LOCAL_HOST = "127.0.0.1";
  * @param port Port to which to connect with Controller
  * @param file File to be sent to Controller for storage
  */
-Client::Client(int port, string file) {
-    // Set file info
-    fstream fs;
-    fs.open(file, fstream::in | fstream::binary);
-    if (fs.is_open()) {
-        filePath = file;        // Save file path
-        fs.seekg(0, fs.end);
-        fileSize = fs.tellg();  // Get file size
-        fs.seekg(0, fs.beg);
-        fs.close();
-    } else {
-        cout << "File didn't open" << endl;
+Client::Client(int port, string cmd, string file) {
+    if (cmd == "-s") {
+        // Set file info
+        fstream fs;
+        fs.open(file, fstream::in | fstream::binary);
+        if (fs.is_open()) {
+            filePath = file;        // Save file path
+            msgType = MessageType::store;   // Assigned message type
+            fs.seekg(0, fs.end);
+            fileSize = fs.tellg();  // Get file size
+            fs.seekg(0, fs.beg);
+            fs.close();
+        } else {
+            cout << "File didn't open" << endl;
+        }
+    } else if (cmd == "-q") {
+        fileSize = 0; 
+        filePath = file;
+        msgType = MessageType::query;
     }
     setSocket(port);
     printf("\nThis is the constructor\n");
@@ -97,7 +103,6 @@ void Client::closeConnection() {
  */
 void Client::sendFileInfo() {
     // Send file info to Controller
-    MessageType msgType = store;
     FileInfo msg = {filePath, fileSize};
     send(newSocket, (const void*)&msgType, sizeof(msgType), 0);
     send(newSocket, (const void*)&msg, sizeof(msg), 0);

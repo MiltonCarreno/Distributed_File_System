@@ -14,7 +14,7 @@
  * @brief Constructs a new Controller object.
  * Sets up socket information.
  */
-Controller::Controller() : bl(50,3) {
+Controller::Controller() : bl(5000,4) {
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(PORT);
@@ -173,10 +173,21 @@ std::vector<int> Controller::getFreeStorageNodes(int fileSize) {
 /**
  * @brief Produces the SHA256 of a given unsigned char*
  * 
- * @param s String to be hashed
+ * @param s Name of file
  */
 void Controller::addFile(unsigned char *s) {
     bl.print();
     bl.add(s);
     bl.print();
+}
+
+/**
+ * @brief Searches for file in bloom filter
+ * 
+ * @param s Name of file
+ * @return true 
+ * @return false 
+ */
+bool Controller::lookUpFile(unsigned char *s) {
+    return bl.query(s);
 }

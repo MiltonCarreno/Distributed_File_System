@@ -19,7 +19,7 @@ void chatFun(Controller *serv, int connection) {
     read(connection, (void *)&msgType, sizeof(msgType));
     cout << "\n******************************" << endl;
     cout << "-----------" << MessageTypeStrings[msgType] << "-----------" << endl;
-    if (msgType != heartbeat) {
+    if (msgType == MessageType::store) {
         FileInfo file;
         read(connection, (void *)&file, sizeof(file));
         cout << "Name of file: " << file.name << endl;
@@ -35,7 +35,12 @@ void chatFun(Controller *serv, int connection) {
             int node = nodes[i];
             send(connection, (const void*)&node, sizeof(node), 0);
         }
-    } else {
+    } else if (msgType == MessageType::query) {
+        FileInfo file;
+        read(connection, (void *)&file, sizeof(file));
+        std::cout << "Is file in the bloom filter? ";
+        std::cout << serv->lookUpFile((unsigned char*)&file.name[0]) << std::endl;
+    } else if (msgType == MessageType::heartbeat) {
         Heartbeat beat;
         read(connection, (void *)&beat, sizeof(beat));
         serv->addStorageNode(beat.port, beat.space);

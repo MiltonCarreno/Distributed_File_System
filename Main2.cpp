@@ -1,3 +1,4 @@
+#include "Client.h"
 #include <arpa/inet.h>
 #include <stdio.h>
 #include <string>
@@ -5,7 +6,6 @@
 #include <unistd.h>
 #include <fstream>
 #include <iostream>
-#include "Client.h"
 using namespace std;
 
 // TODO: Allow for third argument to specify Store or Query actions
@@ -18,7 +18,7 @@ using namespace std;
  */
 int main(int argc, char *argv[]) {
     // Create new client node
-    Client client(atoi(argv[1]), argv[2]);
+    Client client(atoi(argv[1]), argv[2], argv[3]);
 
     // Creat new socket
     client.createSocket();

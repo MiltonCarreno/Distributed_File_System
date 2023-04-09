@@ -1,5 +1,6 @@
 #ifndef CLIENT_H
 #define CLIENT_H
+#include "Message.h"
 #include <netinet/in.h>
 #include <string>
 #include <vector>
@@ -11,9 +12,10 @@ class Client {
         int fileSize, newSocket, addressLen;
         struct sockaddr_in address;
         std::vector<int> nodes;
+        MessageType msgType;
 
     public:
-        Client(int, string);
+        Client(int,string,string);
         void setSocket(int);
         void createSocket();
         void requestConnection();
