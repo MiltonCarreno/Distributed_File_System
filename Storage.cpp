@@ -136,7 +136,7 @@ void Storage::addChunkToInventory(std::string fileName) {
 }
 
 void Storage::sendBeat() {
-    Heartbeat hb = {"This/is/a/path", port, space};
+    Heartbeat hb = {path, port, space};
     MessageType msgType = heartbeat;
     send(hbSocket, (const void*)&msgType, sizeof(msgType), 0);
     send(hbSocket, (const void*)&hb, sizeof(hb), 0);
@@ -154,10 +154,13 @@ void Storage::sendBeat() {
 }
 
 void Storage::saveChunkFile(char *chunk, std::string chunkName, int chunkSize) {
+    // Write chunk file to path
     std::fstream fs(path + "/" + chunkName, std::fstream::out | std::fstream::binary);
     fs.write(chunk, chunkSize);
     fs.close();
-
+    // Update space of Storage node
+    space -= chunkSize;
+    // Add chunk to inventory
     addChunkToInventory(chunkName);
     std::cout << "\n********ADD-CHUNK********" << std::endl;
     printInventory();

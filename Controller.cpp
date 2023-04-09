@@ -8,7 +8,6 @@
 #include <iostream>
 #include <iomanip>
 #include <math.h>
-#include <openssl/sha.h>
 #define PORT 8080
 
 /**
@@ -108,19 +107,10 @@ void Controller::addStorageNode(int nodePort, int nodeSpace) {
     nodes[nodePort]["state"] = NodeState::alive;
     nodes[nodePort]["lastBeat"] = duration_cast<milliseconds>(
         system_clock::now().time_since_epoch()).count();
-    // Iterate through storage nodes and print their info
-    for(auto & node : nodes) {
-        std::cout << " Port: " << node.first << std::endl;
-        for(auto & nodeInfo : node.second) {
-            if (nodeInfo.first == "state" && nodeInfo.second == NodeState::alive) {
-                std::cout << "\t" << nodeInfo.first << ": " << "Alive" << std::endl;   
-            } else if (nodeInfo.first == "state" && nodeInfo.second == NodeState::dead) {
-                std::cout << "\t" << nodeInfo.first << ": " << "Dead" << std::endl;
-            } else {
-                std::cout << "\t" << nodeInfo.first << ": " << nodeInfo.second << std::endl;
-            }
-        }
-    }
+    // Print node's info
+    std::cout << "Port: " << nodePort << std::endl;
+    std::cout << "Space: " << nodes[nodePort]["space"] << std::endl;
+    std::cout << "Last Beat: " << nodes[nodePort]["lastBeat"] << std::endl;
 }
 
 /**
@@ -138,18 +128,23 @@ void Controller::checkStorageNodes() {
                 // Get current time
                 int t_now = (duration_cast<milliseconds>(
                     system_clock::now().time_since_epoch()).count());
+                std::cout << "+++++++++++++++++++++++" << std::endl; 
+                // Print node's port and lastbeat
+                std::cout << "Port: " << node.first << std::endl;
+                std::cout << "Last Beat: " << nodes[node.first]["lastBeat"] << std::endl;
+                std::cout << "State: ";
                 // Calculate time since last beat and update node state accordingly
                 if ((t_now - nodes[node.first]["lastBeat"]) > 10000) {
                     nodes[node.first]["state"] = NodeState::dead;
-                    std::cout << node.first << " = " << "DEAD" << std::endl;
                 } else {
                     nodes[node.first]["state"] = NodeState::alive;
-                    std::cout << node.first << " = " << "ALIVE" << std::endl;
                 }
+                std::cout << NodeStateStrings[nodes[node.first]["state"]] << std::endl;
+                std::cout << "+++++++++++++++++++++++" << std::endl;
             }
             std::cout << "@@@@@@@@@@@@@@@@@@@@@@@\n";
         }
-        // Wait for 15 seconds before checking nodes again
+        // Wait for 10 seconds before checking nodes again
         std::this_thread::sleep_for(milliseconds(10000));
     };
 }
@@ -180,7 +175,7 @@ std::vector<int> Controller::getFreeStorageNodes(int fileSize) {
  * 
  * @param s String to be hashed
  */
-void Controller::getHash(unsigned char *s) {
+void Controller::addFile(unsigned char *s) {
     bl.print();
     bl.add(s);
     bl.print();

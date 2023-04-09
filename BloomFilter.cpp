@@ -89,16 +89,12 @@ bool BloomFilter::query(unsigned char* entry) {
  * 
  */
 void BloomFilter::print() {
+    std::cout << "[";
     for (int i = 0; i<m; i++) {
         std::cout << std::setw(2);
-        std::cout << i << " ";
+        if (bits[i]) std::cout << " " << i;
     }
-    std::cout << std::endl;
-    for (int i = 0; i<m; i++) {
-        std::cout << std::setw(2);
-        std::cout << bits[i] << " ";
-    }
-    std::cout << std::endl;
+    std::cout << " ]" << std::endl;
 }
 
 BloomFilter::~BloomFilter() {

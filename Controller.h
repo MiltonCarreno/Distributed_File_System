@@ -12,11 +12,12 @@
 using namespace std::chrono;
 
 enum NodeState {dead, alive};
+const std::string NodeStateStrings[] {"Dead", "Alive"};
 
 class Controller {
     private:
         std::mutex mapMutex; // Mutex to lock access to map
-        // Records storage node info (i.e. port, space, state)
+        // Records storage node info (i.e. port, space, lastbeat, state)
         std::map<int, std::map<std::string, int>> nodes;
         int newSocket, addressLen, opt;
         struct sockaddr_in address;
@@ -32,6 +33,7 @@ class Controller {
         void addStorageNode(int, int);
         void checkStorageNodes();
         std::vector<int>getFreeStorageNodes(int);
-        void getHash(unsigned char*);
+        void addFile(unsigned char*);
+        bool lookUpFile(unsigned char*);
 };
 #endif

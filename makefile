@@ -13,7 +13,7 @@ dfs: Main.o Controller.o BloomFilter.o	# Controller Node
 Main.o: Main.cpp
 	$(CXX) -std=c++17 -c Main.cpp
 Controller.o: Controller.cpp
-	$(CXX) $(CXXFLAGS) -c Controller.cpp
+	$(CXX) -std=c++17 -c Controller.cpp
 BloomFilter.o: BloomFilter.cpp	# Bloom Filter
 	$(CXX) $(CXXFLAGS) -c BloomFilter.cpp
 client: Main2.o Client.o	# Client Node
