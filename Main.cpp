@@ -7,23 +7,28 @@
 #include <unistd.h>
 #include <vector>
 #include <thread>
-using namespace std;
 
 // Number of connection requests waiting to be accepted
 const int MAX_NUM_CONN_REQS = 10;
 // Number of total connections to be accepted
 const int MAX_NUM_CONN = 13;
 
+/**
+ * @brief Handles message exchanges b/t Controller and Client/Storage nodes
+ * 
+ * @param serv 
+ * @param connection 
+ */
 void chatFun(Controller *serv, int connection) {
     MessageType msgType;
     read(connection, (void *)&msgType, sizeof(msgType));
-    cout << "\n******************************" << endl;
-    cout << "-----------" << MessageTypeStrings[msgType] << "-----------" << endl;
+    std::cout << "\n******************************" << std::endl;
+    std::cout << "-----------" << MessageTypeStrings[msgType] << "-----------" << std::endl;
     if (msgType == MessageType::store) {
         FileInfo file;
         read(connection, (void *)&file, sizeof(file));
-        cout << "Name of file: " << file.name << endl;
-        cout << "Size of file: " << file.size << endl;
+        std::cout << "Name of file: " << file.name << std::endl;
+        std::cout << "Size of file: " << file.size << std::endl;
         // Add file to bloom filter
         serv->addFile((unsigned char*)&file.name[0]);
         // Get storage nodes with free space
@@ -48,16 +53,16 @@ void chatFun(Controller *serv, int connection) {
         int invSize;
         read(connection, (void *)&invSize, sizeof(invSize));
         std::vector<std::string> inv;
-        // std::cout << "Inv: ";
+        std::cout << "Inv: ";
         for (int i = 0; i < invSize; i++) {
             std::string chunkName;
             read(connection, (void *)&chunkName, sizeof(chunkName));
             inv.push_back(chunkName);
-            // std::cout << "[" << chunkName << "] ";
+            std::cout << "[" << chunkName << "] ";
         }
-        // std::cout << std::endl;
+        std::cout << std::endl;
     }
-    cout << "******************************" << endl;
+    std::cout << "******************************" << std::endl;
     // Close connection socket
     close(connection);
 }
@@ -76,13 +81,13 @@ int main(int argc, char *argv[]) {
     server.createSocket();
     server.bindSocket();
     // Accept connection request and create new connection socket
-    vector<thread> threads;
-    threads.emplace_back(thread(&Controller::checkStorageNodes, &server));
+    std::vector<std::thread> threads;
+    threads.emplace_back(std::thread(&Controller::checkStorageNodes, &server));
     for (int i = 0; i<MAX_NUM_CONN; i++) {
         server.listenConnection(MAX_NUM_CONN_REQS);
         int conn = server.acceptConnection();
         // Delegate chatting/connections to individual threads
-        threads.emplace_back(thread(chatFun, &server, conn));
+        threads.emplace_back(std::thread(chatFun, &server, conn));
     }
     // Wait for all the threads to finish
     for (int i = 0; i<threads.size(); i++) {

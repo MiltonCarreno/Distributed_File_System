@@ -9,11 +9,19 @@
 #include <vector>
 #include <string>
 
-using namespace std::chrono;
-
+// Enum to represent state of storage nodes
 enum NodeState {dead, alive};
+// String array to print state of storage nodes
 const std::string NodeStateStrings[] {"Dead", "Alive"};
 
+/**
+ * @file Controller.h
+ * 
+ * @brief Declaration of Controller Node class
+ * 
+ * @author Milton Carreno
+ * 
+ */
 class Controller {
     private:
         std::mutex mapMutex; // Mutex to lock access to map

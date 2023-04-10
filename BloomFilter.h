@@ -1,6 +1,14 @@
 #ifndef BLOOMFILTER_H
 #define BLOOMFILTER_H
 
+/**
+ * @file BloomFilter.h
+ * 
+ * @brief Declaration of BloomFilter class
+ * 
+ * @author Milton Carreno
+ * 
+ */
 class BloomFilter {
     private:
         int m; // Length of bloomfilter (length is conventionally named 'm')

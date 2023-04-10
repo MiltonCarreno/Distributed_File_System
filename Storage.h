@@ -5,9 +5,18 @@
 #include <vector>
 #include <mutex>
 
+/**
+ * @file Storage.h
+ * 
+ * @brief Declaration of Storage Node class
+ * 
+ * @author Milton Carreno
+ * 
+ */
 class Storage {
     private:
-        std::mutex invMutex; // Mutex to lock access to inventory
+        // Mutex to lock access to inventory
+        std::mutex invMutex;
         // Record of stored file names
         std::vector<std::string> inventory;
         // Storage path

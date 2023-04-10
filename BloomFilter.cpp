@@ -97,6 +97,10 @@ void BloomFilter::print() {
     std::cout << " ]" << std::endl;
 }
 
+/**
+ * @brief Destroy the Bloom Filter object
+ * 
+ */
 BloomFilter::~BloomFilter() {
     delete []bits;
 }
