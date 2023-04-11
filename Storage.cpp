@@ -132,7 +132,12 @@ void Storage::printInventory() {
 
 void Storage::addChunkToInventory(std::string fileName) {
     const std::lock_guard<std::mutex> lock(invMutex);
-    inventory.push_back(fileName);
+    inventory.push_back(fileName);  // Add chunk file name to vector
+    // Create 'Inventory' if it doesn't exits
+    std::ofstream invFile(path + "/Inventory.txt",
+        std::ofstream::out | std::ofstream::app);
+    invFile << fileName << std::endl;    // Add chunk file name to 'Inventory' file
+    invFile.close();
 }
 
 void Storage::sendBeat() {
@@ -155,7 +160,8 @@ void Storage::sendBeat() {
 
 void Storage::saveChunkFile(char *chunk, std::string chunkName, int chunkSize) {
     // Write chunk file to path
-    std::fstream fs(path + "/" + chunkName, std::fstream::out | std::fstream::binary);
+    std::fstream fs(path + "/" + chunkName,
+        std::fstream::out | std::fstream::binary | std::fstream::trunc);
     fs.write(chunk, chunkSize);
     fs.close();
     // Update space of Storage node
