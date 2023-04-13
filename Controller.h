@@ -27,6 +27,8 @@ class Controller {
         std::mutex mapMutex; // Mutex to lock access to map
         // Records storage node info (i.e. port, space, lastbeat, state)
         std::map<int, std::map<std::string, int>> nodes;
+        // Records the files saved at storage nodes
+        std::map<int,std::vector<std::string>> inventory;
         int newSocket, addressLen, opt;
         struct sockaddr_in address;
         BloomFilter bl;
@@ -38,7 +40,7 @@ class Controller {
         void listenConnection(int);
         int acceptConnection();
         void shutdownSocket();
-        void addStorageNode(int, int);
+        void addStorageNode(int,int,std::vector<std::string>);
         void checkStorageNodes();
         std::vector<int>getFreeStorageNodes(int);
         void addFile(unsigned char*);

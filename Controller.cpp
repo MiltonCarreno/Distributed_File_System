@@ -101,10 +101,10 @@ void Controller::shutdownSocket() {
  * @param nodePort Port of node to be added
  * @param nodeSpace Space of node to be added
  */
-void Controller::addStorageNode(int nodePort, int nodeSpace) {
+void Controller::addStorageNode(int nodePort, int nodeSpace, std::vector<std::string> inv) {
     // Obtain lock to prevent race conditions
     const std::lock_guard<std::mutex> lock(mapMutex);
-    // Add storage node
+    // Record storage node
     nodes[nodePort]["space"] = nodeSpace;
     nodes[nodePort]["state"] = NodeState::alive;
     nodes[nodePort]["lastBeat"] = duration_cast<milliseconds>(
@@ -113,6 +113,13 @@ void Controller::addStorageNode(int nodePort, int nodeSpace) {
     std::cout << "Port: " << nodePort << std::endl;
     std::cout << "Space: " << nodes[nodePort]["space"] << std::endl;
     std::cout << "Last Beat: " << nodes[nodePort]["lastBeat"] << std::endl;
+    // Record & print storage node inventory
+    std::cout << "Inv: ";
+    for (auto file : inv) {
+        inventory[nodePort].push_back(file);
+        std::cout << "[" << file << "]";
+    }
+    std::cout << std::endl;
 }
 
 /**

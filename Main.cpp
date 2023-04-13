@@ -41,26 +41,26 @@ void chatFun(Controller *serv, int connection) {
             send(connection, (const void*)&node, sizeof(node), 0);
         }
     } else if (msgType == MessageType::query) {
-        FileInfo file;
+        FileInfo file;  // Get file info
         read(connection, (void *)&file, sizeof(file));
+        // Check if file is in bloom filter
         std::cout << "Is file in the bloom filter? ";
         std::cout << serv->lookUpFile((unsigned char*)&file.name[0]) << std::endl;
     } else if (msgType == MessageType::heartbeat) {
-        Heartbeat beat;
+        Heartbeat beat; // Get heartbeat
         read(connection, (void *)&beat, sizeof(beat));
-        serv->addStorageNode(beat.port, beat.space);
-        // Get inventory from storage node
+        // Get storage node inventory size
         int invSize;
         read(connection, (void *)&invSize, sizeof(invSize));
+        // Get storage node inventory
         std::vector<std::string> inv;
-        std::cout << "Inv: ";
         for (int i = 0; i < invSize; i++) {
             std::string chunkName;
             read(connection, (void *)&chunkName, sizeof(chunkName));
             inv.push_back(chunkName);
-            std::cout << "[" << chunkName << "] ";
         }
-        std::cout << std::endl;
+        // Record storage node and its inventory
+        serv->addStorageNode(beat.port, beat.space, inv);
     }
     std::cout << "******************************" << std::endl;
     // Close connection socket
