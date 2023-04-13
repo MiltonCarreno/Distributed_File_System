@@ -16,14 +16,14 @@ const int NUM_BEATS = 5;
 // Number of seconds to wait between heartbeats
 const int NUM_SECS = 5;
 
-void chatFun(Storage *s, int connection, std::string path){    
+void chatFun(Storage *storageNode, int connection, std::string path){    
     MessageType msgType;
     recv(connection, (void *)&msgType, sizeof(msgType), 0);
-    if (msgType != heartbeat) {
-        // Get ChunkInfo (i.e. name and size) 
+    if (msgType == MessageType::store) {
+        // Get chunk info (i.e. name and size) 
         FileInfo chunkInfo;
         int scs = recv(connection, (void *)&chunkInfo, sizeof(chunkInfo), 0);
-        // Get chunk
+        // Get chunk data
         char *buff = new char[chunkInfo.size];
         int r = recv(connection, (void *)buff, chunkInfo.size, 0);
         std::cout << "Bytes Received: " << r << std::endl;
@@ -33,8 +33,8 @@ void chatFun(Storage *s, int connection, std::string path){
         std::cout << "******************************" << std::endl;
         std::cout << "Chunk: " << buff << std::endl;
         std::cout << "******************************" << std::endl;
-
-        s->saveChunkFile(buff, chunkInfo.name, chunkInfo.size);
+        // Save chunk
+        storageNode->saveChunkFile(buff, chunkInfo.name, chunkInfo.size);
         delete [] buff;
     }
     // Close connection socket

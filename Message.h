@@ -7,7 +7,7 @@ enum MessageType {store, query, heartbeat};
 // Array of enum value to corresponding enum string
 // "const" provides internal linkage so that Main3.o & Storage.o can be linked
 const std::string MessageTypeStrings[] {"Store", "Query", "Heartbeat"};
-// Struct containing file info
+// Struct containing file info (used in store and query reqs)
 struct FileInfo {
     std::string name = "";
     int size = 0;

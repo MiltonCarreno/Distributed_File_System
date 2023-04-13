@@ -2,6 +2,7 @@
 #define STORAGE_H
 #include <netinet/in.h>
 #include <string>
+#include <map>
 #include <vector>
 #include <mutex>
 
@@ -19,6 +20,7 @@ class Storage {
         std::mutex invMutex;
         // Record of stored file names
         std::vector<std::string> inventory;
+        std::map<std::string,std::vector<std::string>> inv;
         // Storage path
         std::string path;
         // Port and space currently available
@@ -29,7 +31,7 @@ class Storage {
         struct sockaddr_in hbAddress, sqAddress;
 
     public:
-        Storage(int, std::string);
+        Storage(int,std::string);
         void createSocket();
         void bindSocket();
         void listenConnection(int);
@@ -40,7 +42,7 @@ class Storage {
         void closeHeartBeatSocket();
         void sendBeat();
         void addChunkToInventory(std::string);
-        void saveChunkFile(char*, std::string, int);
+        void saveChunkFile(char*,std::string,int);
         void printInventory();
 };
 #endif

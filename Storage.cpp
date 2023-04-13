@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <chrono>
 #include <thread>
+#include <regex>
 #define PORT_ONE 8080
 #define PORT_TWO 9090
 const char* LOCAL_HOST = "127.0.0.1";
@@ -119,27 +120,6 @@ int Storage::acceptConnection() {
     return connection;
 }
 
-void Storage::printInventory() {
-    const std::lock_guard<std::mutex> lock(invMutex);
-    if (inventory.size() > 0) {
-        std::cout << "INVENTORY: ";
-        for (auto i : inventory) std::cout << "[" << i << "]";
-    } else {
-        std::cout << "--EMPTY INVENTORY--";
-    }
-    std::cout << std::endl;
-}
-
-void Storage::addChunkToInventory(std::string fileName) {
-    const std::lock_guard<std::mutex> lock(invMutex);
-    inventory.push_back(fileName);  // Add chunk file name to vector
-    // Create 'Inventory' if it doesn't exits
-    std::ofstream invFile(path + "/Inventory.txt",
-        std::ofstream::out | std::ofstream::app);
-    invFile << fileName << std::endl;    // Add chunk file name to 'Inventory' file
-    invFile.close();
-}
-
 void Storage::sendBeat() {
     Heartbeat hb = {path, port, space};
     MessageType msgType = heartbeat;
@@ -171,4 +151,41 @@ void Storage::saveChunkFile(char *chunk, std::string chunkName, int chunkSize) {
     std::cout << "\n********ADD-CHUNK********" << std::endl;
     printInventory();
     std::cout << "^^^^^^^^Inventory^^^^^^^^\n" << std::endl;
+}
+
+void Storage::addChunkToInventory(std::string chunkName) {
+    const std::lock_guard<std::mutex> lock(invMutex);
+    inventory.push_back(chunkName);  // Add chunk file name to vector
+    
+    std::smatch m;
+    std::regex e("_");
+    std::string fileName = "";
+
+    if (std::regex_search(chunkName, m, e)) {
+        fileName = m.prefix().str();
+        std::cout << "\nCHUNK NAME: " << fileName << std::endl;
+    }
+
+    inv[fileName].push_back(chunkName);
+    // Create 'Inventory' if it doesn't exits
+    std::ofstream invFile(path + "/Inventory.txt",
+        std::ofstream::out | std::ofstream::app);
+    invFile << fileName << std::endl;    // Add chunk file name to 'Inventory' file
+    invFile.close();
+}
+
+void Storage::printInventory() {
+    const std::lock_guard<std::mutex> lock(invMutex);
+    if (inventory.size() > 0) {
+        std::cout << "INVENTORY: ";
+        for (auto i : inventory) std::cout << "[" << i << "]";
+        std::cout << std::endl;
+        for (auto i : inv) {
+            std::cout << i.first << std::endl;
+            for (auto j : i.second) std::cout << "\t " << j << std::endl;
+        }
+    } else {
+        std::cout << "--EMPTY INVENTORY--";
+    }
+    std::cout << std::endl;
 }

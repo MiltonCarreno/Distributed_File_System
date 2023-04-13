@@ -141,8 +141,9 @@ std::string Client::parseFilePath(int num) {
     std::string chunkName = m1.str();
 
     if (std::regex_search(chunkName, m2, e2)) {
-        chunkName = m2.prefix().str() + "_" + std::to_string(num) +
-        "." + m2.suffix().str();
+        chunkName = m2.prefix().str() + "_" + 
+        std::to_string(num) + "." + m2.suffix().str();
+        std::cout << "\nNAME: " << m2.prefix().str() << std::endl;
     }
     return chunkName;
 }
@@ -167,7 +168,7 @@ void Client::sendChunks() {
         setSocket(nodes[i]);
         createSocket();
         requestConnection();
-        // Get chunk
+        // Get chunk from file
         char *chunk = new char[chunkSize];
         fs.read(chunk, chunkSize);
         std::cout << "Port: " << nodes[i] << std::endl;

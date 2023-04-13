@@ -167,7 +167,7 @@ std::vector<int> Controller::getFreeStorageNodes(int fileSize) {
         if (nodes[node.first]["state"] == NodeState::alive &&
         nodes[node.first]["space"] >= fileSize) {
             availableNodes.push_back(node.first);
-        } 
+        }
     }
     return availableNodes;
 }
