@@ -135,12 +135,14 @@ void Controller::checkStorageNodes() {
             // Iterate through storage nodes
             for (auto & node: nodes) {
                 // Get current time
-                int t_now = (duration_cast<milliseconds>(
+                auto t_now = (duration_cast<milliseconds>(
                     system_clock::now().time_since_epoch()).count());
                 std::cout << "+++++++++++++++++++++++" << std::endl; 
                 // Print node's port and lastbeat
                 std::cout << "Port: " << node.first << std::endl;
                 std::cout << "Last Beat: " << nodes[node.first]["lastBeat"] << std::endl;
+                std::cout << "Now: " << t_now << std::endl;
+                std::cout << "Diff: " << t_now - nodes[node.first]["lastBeat"] << std::endl;
                 std::cout << "State: ";
                 // Calculate time since last beat and update node state accordingly
                 if ((t_now - nodes[node.first]["lastBeat"]) > 10000) {
