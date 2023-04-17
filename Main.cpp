@@ -44,7 +44,7 @@ void chatFun(Controller *serv, int connection) {
         FileInfo file;  // Get file info
         read(connection, (void *)&file, sizeof(file));
         // Check if file is in bloom filter
-        std::cout << "Is file in the bloom filter? ";
+        std::cout << "Is " << file.fileName << " in the bloom filter? ";
         std::cout << serv->lookUpFile((unsigned char*)&file.fileName[0]) << std::endl;
     } else if (msgType == MessageType::heartbeat) {
         Heartbeat beat; // Get heartbeat

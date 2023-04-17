@@ -182,7 +182,7 @@ std::vector<int> Controller::getFreeStorageNodes(int fileSize) {
 }
 
 /**
- * @brief Produces the SHA256 of a given unsigned char*
+ * @brief Adds file name to bloom filter.
  * 
  * @param s Name of file
  */
@@ -193,12 +193,27 @@ void Controller::addFile(unsigned char *s) {
 }
 
 /**
- * @brief Searches for file in bloom filter
+ * @brief Searches for file name.
  * 
  * @param s Name of file
  * @return true 
  * @return false 
  */
 bool Controller::lookUpFile(unsigned char *s) {
-    return bl.query(s);
+    // Check if file is in bloom filter
+    bool fileFound = false;
+    if (bl.query(s)) {
+        std::string ss((char*)s);
+        auto i = inventory.begin();
+        // Check if file is stored in any node
+        while (i != inventory.end() && !fileFound) {
+            auto vec = i->second;
+            auto vec_it = std::find(vec.begin(), vec.end(), ss);
+            if (vec_it != vec.end()) {
+                fileFound = true;
+            }
+            i++;
+        }
+    }
+    return fileFound;
 }

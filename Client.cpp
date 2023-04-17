@@ -99,7 +99,7 @@ void Client::closeConnection() {
  */
 void Client::sendFileInfo() {
     // Send file info to Controller
-    FileInfo msg = {filePath, "", fileSize};
+    FileInfo msg = {fileName, "", fileSize};
     send(newSocket, (const void*)&msgType, sizeof(msgType), 0);
     send(newSocket, (const void*)&msg, sizeof(msg), 0);
 }
@@ -157,8 +157,7 @@ std::string Client::getChunkName(int chunkNum) {
  */
 void Client::sendChunks() {
     // Get file chunks
-    std::fstream fs;
-    fs.open(filePath, std::fstream::in | std::fstream::binary);
+    std::fstream fs(filePath, std::fstream::in | std::fstream::binary);
     int chunkSize;
     if ((fileSize % nodes.size()) == 0) {
         chunkSize = fileSize / nodes.size();

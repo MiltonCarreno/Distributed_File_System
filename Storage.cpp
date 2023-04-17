@@ -130,11 +130,11 @@ void Storage::sendBeat() {
     printInventory();
     std::cout << "^^^^^^^^Inventory^^^^^^^^\n" << std::endl;
 
-    int invSize = inventory.size();
+    int invSize = inv.size();
     std::cout << "Size:" << invSize << std::endl;
     send(hbSocket, (const void*)&invSize, sizeof(invSize), 0);
-    for (auto i: inventory) {
-        send(hbSocket, (const void*)&i, sizeof(i), 0);
+    for (auto i: inv) {
+        send(hbSocket, (const void*)&i.first, sizeof(i.first), 0);
     }
 }
 
