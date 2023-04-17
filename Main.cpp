@@ -27,10 +27,10 @@ void chatFun(Controller *serv, int connection) {
     if (msgType == MessageType::store) {
         FileInfo file;
         read(connection, (void *)&file, sizeof(file));
-        std::cout << "Name of file: " << file.name << std::endl;
+        std::cout << "Name of file: " << file.fileName << std::endl;
         std::cout << "Size of file: " << file.size << std::endl;
         // Add file to bloom filter
-        serv->addFile((unsigned char*)&file.name[0]);
+        serv->addFile((unsigned char*)&file.fileName[0]);
         // Get storage nodes with free space
         std::vector<int> nodes = serv->getFreeStorageNodes(file.size);
         // Send storage node info one by one
@@ -45,7 +45,7 @@ void chatFun(Controller *serv, int connection) {
         read(connection, (void *)&file, sizeof(file));
         // Check if file is in bloom filter
         std::cout << "Is file in the bloom filter? ";
-        std::cout << serv->lookUpFile((unsigned char*)&file.name[0]) << std::endl;
+        std::cout << serv->lookUpFile((unsigned char*)&file.fileName[0]) << std::endl;
     } else if (msgType == MessageType::heartbeat) {
         Heartbeat beat; // Get heartbeat
         read(connection, (void *)&beat, sizeof(beat));

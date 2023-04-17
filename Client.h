@@ -4,6 +4,7 @@
 #include <netinet/in.h>
 #include <string>
 #include <vector>
+#include <tuple>
 
 /**
  * @file Client.h
@@ -15,7 +16,7 @@
  */
 class Client {
     private:
-        std::string filePath;
+        std::string filePath, fileName;
         int fileSize, newSocket, addressLen;
         struct sockaddr_in address;
         std::vector<int> nodes;
@@ -29,7 +30,8 @@ class Client {
         void closeConnection();
         void sendFileInfo();
         void getStorageNodes();
-        std::string parseFilePath(int);
+        std::string getFileName(std::string);
+        std::string getChunkName(int);
         void sendChunks();
 };
 #endif

@@ -20,27 +20,23 @@ const char* LOCAL_HOST = "127.0.0.1";
  * @param msg Message type to be sent to Controller
  * @param file File to be sent to Controller for storage
  */
-Client::Client(int port, MessageType msg, std::string file) {
-    if (msg == MessageType::store) {    // Store request
-        std::fstream fs;
-        fs.open(file, std::fstream::in | std::fstream::binary);
+Client::Client(int port, MessageType msg, std::string path) 
+: filePath(path), fileName(getFileName(path)), msgType(msg) {
+    if (msg == MessageType::store) {        // Store request
+        std::fstream fs(path, std::fstream::in | std::fstream::binary);
         if (fs.is_open()) {
             fs.seekg(0, fs.end);
-            filePath = file;        // Save file path
-            fileSize = fs.tellg();  // Get file size
-            msgType = msg;          // Set message type
+            fileSize = fs.tellg();          // Get file size
             fs.seekg(0, fs.beg);
             fs.close();
         } else {
-            std::cout << "File didn't open" << std::endl;
+            std::cout << "\nFile didn't open" << std::endl;
         }
     } else if (msg == MessageType::query) { // Query request
-        fileSize = 0; 
-        filePath = file;
-        msgType = msg;
+        fileSize = 0;
     }
     setSocket(port);
-    printf("\nThis is the constructor\n");
+    std::cout << "\nThis is the constructor" << std::endl;
 }
 
 /**
@@ -55,7 +51,7 @@ void Client::setSocket(int port) {
     addressLen = sizeof(address);
 
     if (inet_pton(AF_INET, LOCAL_HOST, &address.sin_addr) <= 0) {
-        printf("\nInvalid address/ Address not supported \n");
+        std::cout << "\nInvalid address/ Address not supported" << std::endl;
     }
 }
 
@@ -69,7 +65,7 @@ void Client::createSocket() {
         perror("socket failed");
         exit(EXIT_FAILURE);
     }
-    printf("\nCreated Socket\n");
+    std::cout << "\nCreated Socket" << std::endl;
 }
 
 /**
@@ -83,7 +79,7 @@ void Client::requestConnection() {
         perror("Connection request error");
         exit(EXIT_FAILURE);
     }
-    printf("\nConnection Request Accepted\n");
+    std::cout << "\nConnection Request Accepted" << std::endl;
 }
 
 /**
@@ -103,7 +99,7 @@ void Client::closeConnection() {
  */
 void Client::sendFileInfo() {
     // Send file info to Controller
-    FileInfo msg = {filePath, fileSize};
+    FileInfo msg = {filePath, "", fileSize};
     send(newSocket, (const void*)&msgType, sizeof(msgType), 0);
     send(newSocket, (const void*)&msg, sizeof(msg), 0);
 }
@@ -128,24 +124,31 @@ void Client::getStorageNodes() {
 }
 
 /**
- * @brief Parses file path to create chunk name.
- * 'num' is appended to the file name to create the chunk name.
+ * @brief Extracts the file name from the file path.
  * 
- * @param num Number to append to file name, indicating chunk number
- * @return string Chunk name
+ * @param path File path
+ * @return std::string File name
  */
-std::string Client::parseFilePath(int num) {
-    std::smatch m1, m2;
-    std::regex e1("[^/]+\\w+$"), e2("\\.");
-    std::regex_search(filePath, m1, e1);
-    std::string chunkName = m1.str();
+std::string Client::getFileName(std::string path) {
+    std::smatch m;
+    std::regex e("[^/]+\\w+$");
+    std::regex_search(path, m, e);
+    std::string fileName = m.str();
+    return fileName;
+}
 
-    if (std::regex_search(chunkName, m2, e2)) {
-        chunkName = m2.prefix().str() + "_" + 
-        std::to_string(num) + "." + m2.suffix().str();
-        std::cout << "\nNAME: " << m2.prefix().str() << std::endl;
-    }
-    return chunkName;
+/**
+ * @brief Generates chunk name from file name
+ * 
+ * @param chunkNum Idex indicating chunk order
+ * @return std::string Chunk name (e.g. file_7.txt)
+ */
+std::string Client::getChunkName(int chunkNum) {
+    std::smatch m;
+    std::regex e("\\.");
+    std::regex_search(fileName, m, e);    
+    return m.prefix().str() + "_" + 
+    std::to_string(chunkNum) + "." + m.suffix().str();
 }
 
 /**
@@ -162,7 +165,6 @@ void Client::sendChunks() {
     } else {
         chunkSize = (fileSize / nodes.size()) + 1;
     }
-
     // Connect to Storage nodes one by one
     for (int i = 0; i < nodes.size(); i++) {
         setSocket(nodes[i]);
@@ -176,19 +178,20 @@ void Client::sendChunks() {
         std::cout << "Chunk Read: " << sizeof(chunk) << std::endl;
         std::cout << chunk << std::endl;
         // Parse file path to get chunk name
-        std::string chunkName = parseFilePath(i);
+        std::string chunkName = getChunkName(i);
+        std::cout << "File Name: " << fileName << std::endl;
         std::cout << "Chunk Name: " << chunkName << std::endl;
         // Send message type
         MessageType msgType = store;
         send(newSocket, (const void*)&msgType, sizeof(msgType), 0);
         // Send FileInfo message (i.e. name and size of chunk)
-        FileInfo chunkInfo = {chunkName, chunkSize};
+        FileInfo chunkInfo = {fileName, chunkName, chunkSize};
         int scs = send(newSocket, (void *)&chunkInfo, sizeof(chunkInfo), 0);
         // Send chunk
         int sc = send(newSocket, (void *)chunk, chunkSize, 0);
         std::cout << "Sent scs: " << scs << std::endl;
         std::cout << "Sent sc: " << sc << std::endl;
-        
+        // Free memory
         delete[] chunk;
         closeConnection();
     }

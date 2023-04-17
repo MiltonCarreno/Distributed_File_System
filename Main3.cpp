@@ -27,14 +27,15 @@ void chatFun(Storage *storageNode, int connection, std::string path){
         char *buff = new char[chunkInfo.size];
         int r = recv(connection, (void *)buff, chunkInfo.size, 0);
         std::cout << "Bytes Received: " << r << std::endl;
-        std::cout << "Chunk File Name: " << chunkInfo.name << std::endl;
-        std::cout << "Chunk File Size: " << chunkInfo.size << std::endl;
+        std::cout << "Chunk Name: " << chunkInfo.chunkName << std::endl;
+        std::cout << "Chunk Size: " << chunkInfo.size << std::endl;
         std::cout << "Chunk len: " << strlen(buff) << std::endl;
         std::cout << "******************************" << std::endl;
         std::cout << "Chunk: " << buff << std::endl;
         std::cout << "******************************" << std::endl;
         // Save chunk
-        storageNode->saveChunkFile(buff, chunkInfo.name, chunkInfo.size);
+        storageNode->saveChunkFile(buff, chunkInfo.fileName,
+        chunkInfo.chunkName, chunkInfo.size);
         delete [] buff;
     }
     // Close connection socket

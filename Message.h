@@ -9,7 +9,8 @@ enum MessageType {store, query, heartbeat};
 const std::string MessageTypeStrings[] {"Store", "Query", "Heartbeat"};
 // Struct containing file info (used in store and query reqs)
 struct FileInfo {
-    std::string name = "";
+    std::string fileName = "";
+    std::string chunkName = "";
     int size = 0;
 };
 // Struct containing storage node info

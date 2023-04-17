@@ -138,7 +138,7 @@ void Storage::sendBeat() {
     }
 }
 
-void Storage::saveChunkFile(char *chunk, std::string chunkName, int chunkSize) {
+void Storage::saveChunkFile(char *chunk, std::string fileName, std::string chunkName, int chunkSize) {
     // Write chunk file to path
     std::fstream fs(path + "/" + chunkName,
         std::fstream::out | std::fstream::binary | std::fstream::trunc);
@@ -147,24 +147,15 @@ void Storage::saveChunkFile(char *chunk, std::string chunkName, int chunkSize) {
     // Update space of Storage node
     space -= chunkSize;
     // Add chunk to inventory
-    addChunkToInventory(chunkName);
+    addChunkToInventory(fileName, chunkName);
     std::cout << "\n********ADD-CHUNK********" << std::endl;
     printInventory();
     std::cout << "^^^^^^^^Inventory^^^^^^^^\n" << std::endl;
 }
 
-void Storage::addChunkToInventory(std::string chunkName) {
+void Storage::addChunkToInventory(std::string fileName, std::string chunkName) {
     const std::lock_guard<std::mutex> lock(invMutex);
     inventory.push_back(chunkName);  // Add chunk file name to vector
-    
-    std::smatch m;
-    std::regex e("_");
-    std::string fileName = "";
-
-    if (std::regex_search(chunkName, m, e)) {
-        fileName = m.prefix().str();
-        std::cout << "\nCHUNK NAME: " << fileName << std::endl;
-    }
 
     inv[fileName].push_back(chunkName);
     // Create 'Inventory' if it doesn't exits
